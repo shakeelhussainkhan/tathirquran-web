@@ -4,7 +4,8 @@ import { useState, useTransition } from "react";
 import AyahCard from "@/components/AyahCard";
 import LanguageSelector from "@/components/LanguageSelector";
 import TranslationSelector from "@/components/TranslationSelector";
-import type { Language, TodayAyahResponse, Translation, AyahTranslation } from "@/types";
+import TafsirPanel from "@/components/TafsirPanel";
+import type { Language, TodayAyahResponse, Translation } from "@/types";
 
 interface HomeInteractiveProps {
   initialData: TodayAyahResponse;
@@ -27,7 +28,6 @@ export default function HomeInteractive({
     setActiveLanguage(code);
 
     if (code === "en") {
-      // Reset to default
       setOverrideTranslation(null);
       setTranslations([]);
       setSelectedTranslationId(null);
@@ -36,7 +36,6 @@ export default function HomeInteractive({
 
     startTransition(async () => {
       try {
-        // Fetch translations for this language and the ayah text
         const [transRes, ayahRes] = await Promise.all([
           fetch(`/api/languages/${code}/translations`),
           fetch(`/api/ayah-translation?ayah_id=${getAyahId()}&language=${code}`),
@@ -88,29 +87,39 @@ export default function HomeInteractive({
     }
   };
 
-  // We don't have the ayah_id directly in TodayAyahResponse, but we can build it
-  // by calling the API we already have. For now use a dummy approach — the API routes
-  // below will join on surah/ayah numbers instead.
   function getAyahId(): string {
     return `${initialData.ayah.surah_number}-${initialData.ayah.ayah_number}`;
   }
 
   return (
-    <div>
-      <AyahCard
-        data={initialData}
-        activeLanguage={activeLanguage}
-        overrideTranslation={overrideTranslation}
-        label="Today"
-      />
+    <>
+      {/* Hero — verse floats on parchment */}
+      <section className="tq-hero">
+        <AyahCard
+          data={initialData}
+          activeLanguage={activeLanguage}
+          overrideTranslation={overrideTranslation}
+        />
+      </section>
 
-      <div style={{ marginTop: "20px" }}>
+      {/* Language + translation selector */}
+      <div className="tq-selectors">
+        <span
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "9px",
+            letterSpacing: ".15em",
+            color: "#9a7830",
+            textTransform: "uppercase",
+          }}
+        >
+          Translation
+        </span>
         <LanguageSelector
           languages={languages}
           selectedCode={activeLanguage}
           onChange={handleLanguageChange}
         />
-
         {translations.length > 1 && (
           <TranslationSelector
             translations={translations}
@@ -118,21 +127,24 @@ export default function HomeInteractive({
             onChange={handleTranslationChange}
           />
         )}
-
         {isPending && (
-          <p
+          <span
             style={{
               fontFamily: "'Inter', sans-serif",
-              fontSize: "10px",
+              fontSize: "9px",
               color: "#7a6030",
-              marginTop: "8px",
               letterSpacing: "0.06em",
             }}
           >
-            Loading translation…
-          </p>
+            Loading…
+          </span>
         )}
       </div>
-    </div>
+
+      {/* Tafsir */}
+      <div className="tq-tafsir-wrap">
+        <TafsirPanel tafsir={initialData.tafsir} />
+      </div>
+    </>
   );
 }

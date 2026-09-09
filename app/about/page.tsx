@@ -1,5 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import LockScreenPreview from "@/components/LockScreenPreview";
+import type { TodayAyahResponse } from "@/types";
 
 export const metadata: Metadata = {
   title: "About — TathirQuran",
@@ -56,6 +58,28 @@ const SCHOLARS = [
     note: "Permission letter sent to estate Sep 2026.",
   },
 ];
+
+const WIDGET_EXAMPLE: TodayAyahResponse = {
+  date: "2026-09-09",
+  hijri_date: "15 Rabi al-Awwal 1448 AH",
+  ayah: {
+    surah_number: 33,
+    ayah_number: 33,
+    arabic_uthmani: "إِنَّمَا يُرِيدُ اللَّهُ لِيُذْهِبَ عَنكُمُ الرِّجْسَ أَهْلَ الْبَيْتِ وَيُطَهِّرَكُمْ تَطْهِيرًا",
+    transliteration: null,
+  },
+  surah: {
+    name_arabic: "الأحزاب",
+    name_english: "The Combined Forces",
+    name_transliterated: "Al-Ahzab",
+  },
+  translation: {
+    text: "Indeed, Allah intends only to remove impurity from you, O People of the Household, and to purify you with a thorough purification.",
+    scholar_name: "M.H. Shakir",
+    language_code: "en",
+  },
+  tafsir: null,
+};
 
 export default function AboutPage() {
   return (
@@ -167,6 +191,17 @@ export default function AboutPage() {
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#c9a227", letterSpacing: "0.08em" }}>
           tathirquran@gmail.com
         </p>
+      </section>
+
+      {/* Lock Screen Widget Preview */}
+      <section style={{ marginBottom: "48px" }}>
+        <h2 style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "#c9a227", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "20px", fontWeight: 600 }}>
+          Lock Screen Widget Preview
+        </h2>
+        <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "16px", color: "#2a1f08", lineHeight: 1.65, marginBottom: "24px" }}>
+          Every morning, the day&apos;s ayah appears directly on your phone lock screen — no need to open an app. The widget shows the Arabic text, the English translation, and the surah reference.
+        </p>
+        <LockScreenPreview data={WIDGET_EXAMPLE} />
       </section>
 
       <div style={{ height: "0.5px", background: "linear-gradient(90deg, #e8c96a, rgba(201,162,39,0.2))", marginBottom: "24px" }} aria-hidden="true" />
