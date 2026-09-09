@@ -1,69 +1,251 @@
-import Image from "next/image";
+import { Suspense } from "react";
+import Link from "next/link";
+import { getTodayAyahData, getLiveLanguages, getTranslationsForLanguage, getAyahTranslation } from "@/lib/queries";
+import AyahCard from "@/components/AyahCard";
+import TafsirPanel from "@/components/TafsirPanel";
+import DownloadButtons from "@/components/DownloadButtons";
+import LockScreenPreview from "@/components/LockScreenPreview";
+import HomeInteractive from "@/app/HomeInteractive";
+import { formatReadableDate, gregorianToHijriString } from "@/lib/utils";
 
-export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const data = await getTodayAyahData();
+  const languages = await getLiveLanguages();
+
+  if (!data) {
+    return (
+      <main style={{ maxWidth: "680px", margin: "0 auto", padding: "48px 24px" }}>
+        <p
+          style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontStyle: "italic",
+            color: "#7a6030",
+            fontSize: "18px",
+          }}
+        >
+          The database is being prepared. Please check back soon.
+          <br />
+          <span style={{ fontSize: "13px" }}>
+            Supabase migrations and seed data are pending.
+          </span>
+        </p>
       </main>
-    </div>
+    );
+  }
+
+  const today = new Date(data.date + "T00:00:00Z");
+  const hijriDate = gregorianToHijriString(today);
+  const readableDate = formatReadableDate(data.date);
+
+  return (
+    <main style={{ maxWidth: "680px", margin: "0 auto", padding: "0 24px 64px" }}>
+      {/* Header */}
+      <header
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "baseline",
+          paddingTop: "32px",
+          paddingBottom: "12px",
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "12px",
+            color: "#c9a227",
+            letterSpacing: "0.14em",
+            textTransform: "uppercase",
+            fontWeight: 600,
+          }}
+        >
+          TathirQuran
+        </span>
+        <span
+          style={{
+            fontFamily: "'Amiri', serif",
+            fontSize: "14px",
+            color: "#c9a227",
+            direction: "rtl",
+          }}
+          lang="ar"
+          dir="rtl"
+        >
+          تطهیر القرآن
+        </span>
+      </header>
+
+      {/* Bronze rule under header */}
+      <div
+        style={{
+          height: "0.5px",
+          background: "linear-gradient(90deg, #e8c96a, #c9a227 40%, transparent)",
+          marginBottom: "40px",
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Date row */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "baseline",
+          marginBottom: "24px",
+          flexWrap: "wrap",
+          gap: "4px",
+        }}
+      >
+        <p
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "11px",
+            color: "#7a6030",
+            letterSpacing: "0.06em",
+          }}
+        >
+          {readableDate}
+        </p>
+        <p
+          style={{
+            fontFamily: "'Amiri', serif",
+            fontSize: "13px",
+            color: "#7a6030",
+          }}
+          lang="ar"
+          dir="rtl"
+        >
+          {hijriDate}
+        </p>
+      </div>
+
+      {/* Main ayah card + interactive language/translation selector */}
+      <Suspense fallback={<AyahCard data={data} label="Today" />}>
+        <HomeInteractive
+          initialData={data}
+          languages={languages}
+        />
+      </Suspense>
+
+      {/* Tafsir */}
+      <div style={{ marginTop: "32px" }}>
+        <TafsirPanel tafsir={data.tafsir} />
+      </div>
+
+      {/* Divider */}
+      <div
+        style={{
+          height: "0.5px",
+          background: "linear-gradient(90deg, #e8c96a, rgba(201,162,39,0.2))",
+          margin: "36px 0",
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Lock screen preview */}
+      <section style={{ marginBottom: "40px" }}>
+        <p
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "10px",
+            color: "#7a6030",
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            marginBottom: "20px",
+            fontWeight: 500,
+          }}
+        >
+          Lock Screen Widget Preview
+        </p>
+        <LockScreenPreview data={data} />
+      </section>
+
+      {/* Divider */}
+      <div
+        style={{
+          height: "0.5px",
+          background: "linear-gradient(90deg, rgba(201,162,39,0.2), #e8c96a, rgba(201,162,39,0.2))",
+          margin: "36px 0",
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Footer */}
+      <footer style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        <DownloadButtons />
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "8px",
+          }}
+        >
+          <nav style={{ display: "flex", gap: "20px" }}>
+            {[
+              { href: "/archive", label: "Archive" },
+              { href: "/about", label: "About" },
+            ].map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: "11px",
+                  color: "#7a6030",
+                  textDecoration: "none",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+
+          <button
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontFamily: "'Inter', sans-serif",
+              fontSize: "11px",
+              color: "#c9a227",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              padding: 0,
+            }}
+            onClick={() => {
+              if (typeof navigator !== "undefined") {
+                navigator.clipboard?.writeText(
+                  `${window.location.origin}/ayah/${data.ayah.surah_number}/${data.ayah.ayah_number}`
+                );
+              }
+            }}
+          >
+            Share this ayah →
+          </button>
+        </div>
+
+        <p
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "10px",
+            color: "#7a6030",
+            letterSpacing: "0.06em",
+            opacity: 0.7,
+          }}
+        >
+          Purify your mornings with the Word of Allah · بِسْمِ اللَّهِ
+        </p>
+      </footer>
+    </main>
   );
 }
