@@ -2,25 +2,26 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "TathirQuran — Daily Ayah",
-  description: "Purify your mornings with the Word of Allah. Daily Quran verse with Shia translations and tafsir.",
+  title: 'TathirQuran — Daily Shia Quran Verse',
+  description: 'Start every morning with a verse from the Holy Quran. Shia-verified translations by M.H. Shakir, Muhammad Sarwar, and Mahdi Ilahi Ghomshei. Free app by Five S LLC.',
   keywords: ["Quran", "Shia", "daily ayah", "Islamic", "Quran app", "تطهیر"],
   icons: {
-    icon: "/icon",
-    apple: "/apple-icon",
+    icon: '/icon',
+    apple: '/apple-icon',
+    shortcut: '/icon',
   },
   openGraph: {
-    title: "TathirQuran — Daily Ayah",
-    description: "Purify your mornings with the Word of Allah.",
-    url: "https://tathirquran.com",
-    siteName: "TathirQuran",
-    locale: "en_US",
-    type: "website",
+    title: 'TathirQuran — Daily Shia Quran Verse',
+    description: 'Purify your mornings with the Word of Allah. Shia-verified translations in English, Persian and more.',
+    url: 'https://tathirquran.com',
+    siteName: 'TathirQuran',
+    locale: 'en_US',
+    type: 'website',
   },
   twitter: {
-    card: "summary",
-    title: "TathirQuran — Daily Ayah",
-    description: "Purify your mornings with the Word of Allah.",
+    card: 'summary_large_image',
+    title: 'TathirQuran — Daily Shia Quran Verse',
+    description: 'Purify your mornings with the Word of Allah.',
   },
 };
 
