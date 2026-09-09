@@ -52,8 +52,8 @@ export default async function HomePage() {
         <span
           style={{
             fontFamily: "'Inter', sans-serif",
-            fontSize: "9px",
-            letterSpacing: "0.2em",
+            fontSize: "11px",
+            letterSpacing: "0.18em",
             textTransform: "uppercase",
             color: "#c9a227",
           }}
@@ -64,8 +64,8 @@ export default async function HomePage() {
           <span
             style={{
               fontFamily: "'Inter', sans-serif",
-              fontSize: "9px",
-              letterSpacing: "0.06em",
+              fontSize: "11px",
+              letterSpacing: "0.04em",
               color: "#9a7830",
             }}
           >
@@ -74,9 +74,9 @@ export default async function HomePage() {
           <span
             style={{
               fontFamily: "'Inter', sans-serif",
-              fontSize: "9px",
-              letterSpacing: "0.06em",
-              color: "rgba(201,162,39,0.6)",
+              fontSize: "11px",
+              letterSpacing: "0.04em",
+              color: "rgba(201,162,39,0.7)",
             }}
           >
             {hijriDate}
@@ -86,7 +86,7 @@ export default async function HomePage() {
             dir="rtl"
             style={{
               fontFamily: "'Amiri', serif",
-              fontSize: "14px",
+              fontSize: "16px",
               color: "rgba(201,162,39,0.7)",
               direction: "rtl",
             }}

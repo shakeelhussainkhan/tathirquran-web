@@ -197,12 +197,12 @@ export default function HomeInteractive({
           {/* Verse reference */}
           <div className="w4-ref">
             {surah.name_english} · {ayah.surah_number}:{ayah.ayah_number}
-            {displayTranslation?.scholar_name && (
-              <span style={{ color: "rgba(201,162,39,0.55)", marginLeft: "8px" }}>
-                — {displayTranslation.scholar_name}
-              </span>
-            )}
           </div>
+          {displayTranslation?.scholar_name && (
+            <div className="w4-scholar">
+              {displayTranslation.scholar_name}
+            </div>
+          )}
 
           {isPending && (
             <div
