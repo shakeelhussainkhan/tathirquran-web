@@ -2,33 +2,35 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import LanguageSelector from "@/components/LanguageSelector";
 import TranslationSelector from "@/components/TranslationSelector";
-import TafsirPanel from "@/components/TafsirPanel";
-import DownloadButtons from "@/components/DownloadButtons";
 import ShareButton from "@/components/ShareButton";
 import type { Language, TodayAyahResponse, Translation } from "@/types";
 
 interface HomeInteractiveProps {
   initialData: TodayAyahResponse;
   languages: Language[];
-  readableDate: string;
 }
 
 export default function HomeInteractive({
   initialData,
   languages,
-  readableDate,
 }: HomeInteractiveProps) {
   const [activeLanguage, setActiveLanguage] = useState("en");
   const [translations, setTranslations] = useState<Translation[]>([]);
-  const [selectedTranslationId, setSelectedTranslationId] = useState<number | null>(null);
+  const [selectedTranslationId, setSelectedTranslationId] = useState<
+    number | null
+  >(null);
   const [overrideTranslation, setOverrideTranslation] = useState<
     TodayAyahResponse["translation"] | null
   >(null);
+  const [tafsirOpen, setTafsirOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const handleLanguageChange = async (code: string) => {
+  function getAyahId(): string {
+    return `${initialData.ayah.surah_number}-${initialData.ayah.ayah_number}`;
+  }
+
+  const handleLangChange = async (code: string) => {
     setActiveLanguage(code);
 
     if (code === "en") {
@@ -91,186 +93,176 @@ export default function HomeInteractive({
     }
   };
 
-  function getAyahId(): string {
-    return `${initialData.ayah.surah_number}-${initialData.ayah.ayah_number}`;
-  }
-
   const displayTranslation = overrideTranslation ?? initialData.translation;
   const isUrdu = activeLanguage === "ur";
   const isRtlTranslation = ["ar", "fa", "ur"].includes(
     displayTranslation?.language_code ?? activeLanguage
   );
 
+  const { ayah, surah, tafsir } = initialData;
+
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        padding: "28px 32px",
-        justifyContent: "space-between",
-        minHeight: "inherit",
-      }}
-    >
-      {/* TOP — date + label */}
-      <div>
-        <div
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: "9px",
-            color: "#9a7830",
-            letterSpacing: ".05em",
-          }}
-        >
-          {readableDate}
-        </div>
-        <div
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: "8px",
-            letterSpacing: ".18em",
-            color: "rgba(201,162,39,.55)",
-            textTransform: "uppercase",
-            marginTop: "3px",
-          }}
-        >
-          TODAY&apos;S AYAH
-        </div>
-      </div>
-
-      {/* CENTER — translation + controls */}
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          gap: "12px",
-          paddingTop: "24px",
-          paddingBottom: "24px",
-        }}
-      >
-        {/* Translation label */}
-        <div
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: "8px",
-            letterSpacing: ".16em",
-            color: "#9a7830",
-            textTransform: "uppercase",
-          }}
-        >
-          TRANSLATION
-        </div>
-
-        {/* Translation text */}
-        {displayTranslation ? (
-          isUrdu ? (
-            <p
-              className="urdu-text"
-              style={{ fontSize: "20px", color: "#1a1205" }}
-              lang="ur"
-              dir="rtl"
-            >
-              {displayTranslation.text}
-            </p>
-          ) : (
-            <p
-              className="translation-hero"
-              style={{
-                maxWidth: "420px",
-                direction: isRtlTranslation ? "rtl" : "ltr",
-              }}
-              lang={displayTranslation.language_code}
-            >
-              &ldquo;{displayTranslation.text}&rdquo;
-            </p>
-          )
-        ) : (
-          <p
-            className="translation-hero"
-            style={{ color: "#7a6030" }}
-          >
-            Translation not yet available.
-          </p>
-        )}
-
-        {/* Ornament */}
-        <div
+    <>
+      {/* HERO — verse centred on parchment */}
+      <section className="w4-hero">
+        {/* Islamic geometric watermark */}
+        <svg
+          className="w4-watermark"
+          viewBox="0 0 500 500"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
           aria-hidden="true"
-          style={{ display: "flex", gap: "10px", alignItems: "center" }}
         >
-          <div
-            style={{ width: "32px", height: "0.5px", background: "rgba(201,162,39,.35)" }}
+          <polygon
+            points="250,10 480,135 480,365 250,490 20,365 20,135"
+            stroke="#8b6520"
+            strokeWidth="1.2"
+            fill="none"
           />
-          <span style={{ color: "#c9a227", fontSize: "9px" }}>◆</span>
-          <div
-            style={{ width: "32px", height: "0.5px", background: "rgba(201,162,39,.35)" }}
+          <polygon
+            points="250,45 445,158 445,342 250,455 55,342 55,158"
+            stroke="#8b6520"
+            strokeWidth="0.8"
+            fill="none"
           />
-        </div>
+          <polygon
+            points="250,30 275,110 355,70 330,148 415,150 355,205 415,260 330,260 355,340 275,298 250,378 225,298 145,340 170,260 85,260 145,205 85,150 170,148 145,70 225,110"
+            stroke="#8b6520"
+            strokeWidth="0.6"
+            fill="none"
+            opacity="0.7"
+          />
+          <circle cx="250" cy="250" r="190" stroke="#8b6520" strokeWidth="0.6" fill="none" />
+          <circle cx="250" cy="250" r="140" stroke="#8b6520" strokeWidth="0.5" fill="none" />
+          <circle cx="250" cy="250" r="90" stroke="#8b6520" strokeWidth="0.4" fill="none" />
+          <circle cx="250" cy="250" r="40" stroke="#8b6520" strokeWidth="0.4" fill="none" />
+          <polygon
+            points="250,110 269,194 355,170 295,234 355,298 269,274 250,358 231,274 145,298 205,234 145,170 231,194"
+            stroke="#8b6520"
+            strokeWidth="0.5"
+            fill="none"
+            opacity="0.6"
+          />
+          <line x1="250" y1="10" x2="250" y2="490" stroke="#8b6520" strokeWidth="0.3" opacity="0.4" />
+          <line x1="10" y1="250" x2="490" y2="250" stroke="#8b6520" strokeWidth="0.3" opacity="0.4" />
+          <line x1="80" y1="80" x2="420" y2="420" stroke="#8b6520" strokeWidth="0.3" opacity="0.3" />
+          <line x1="420" y1="80" x2="80" y2="420" stroke="#8b6520" strokeWidth="0.3" opacity="0.3" />
+        </svg>
 
-        {/* Scholar name */}
-        {displayTranslation?.scholar_name && (
-          <div
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: "10px",
-              color: "#c9a227",
-              letterSpacing: ".08em",
-            }}
-          >
-            {displayTranslation.scholar_name}
+        {/* Verse content */}
+        <div className="w4-verse-content">
+          {/* Bismillah */}
+          <div className="w4-bismillah" lang="ar" dir="rtl">
+            بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
           </div>
-        )}
 
-        {/* Urdu coming-soon notice */}
-        {isUrdu && (
-          <div
-            style={{
-              paddingTop: "12px",
-              borderTop: "0.5px solid rgba(201,162,39,.15)",
-              maxWidth: "380px",
-            }}
-          >
-            <p
+          {/* Arabic verse */}
+          <p className="w4-arabic" lang="ar" dir="rtl">
+            {ayah.arabic_uthmani}
+          </p>
+
+          {/* Ornament */}
+          <div className="w4-ornament" aria-hidden="true">
+            <div className="w4-ornament-line" />
+            <span className="w4-ornament-diamond">◆</span>
+            <div className="w4-ornament-line" />
+          </div>
+
+          {/* Translation */}
+          {displayTranslation ? (
+            isUrdu ? (
+              <p
+                className="urdu-text"
+                style={{ fontSize: "22px", color: "#1a1205", textAlign: "center" }}
+                lang="ur"
+                dir="rtl"
+              >
+                {displayTranslation.text}
+              </p>
+            ) : (
+              <p
+                className="w4-translation"
+                style={{ direction: isRtlTranslation ? "rtl" : "ltr" }}
+                lang={displayTranslation.language_code}
+              >
+                &ldquo;{displayTranslation.text}&rdquo;
+              </p>
+            )
+          ) : (
+            <p className="w4-translation" style={{ color: "#7a6030" }}>
+              Translation not yet available.
+            </p>
+          )}
+
+          {/* Verse reference */}
+          <div className="w4-ref">
+            {surah.name_english} · {ayah.surah_number}:{ayah.ayah_number}
+            {displayTranslation?.scholar_name && (
+              <span style={{ color: "rgba(201,162,39,0.55)", marginLeft: "8px" }}>
+                — {displayTranslation.scholar_name}
+              </span>
+            )}
+          </div>
+
+          {isPending && (
+            <div
               style={{
                 fontFamily: "'Inter', sans-serif",
-                fontSize: "11px",
-                color: "#7a6030",
-                lineHeight: 1.6,
+                fontSize: "9px",
+                color: "#9a7830",
+                letterSpacing: "0.06em",
+                marginTop: "8px",
               }}
             >
-              Shia-verified Urdu translation coming soon. Permission requests sent
-              to{" "}
-              <span style={{ color: "#c9a227" }}>Allama Najafi</span>,{" "}
-              <span style={{ color: "#c9a227" }}>Syed Jawadi</span>, and{" "}
-              <span style={{ color: "#c9a227" }}>Maulana Farman Ali</span>.
-            </p>
-          </div>
-        )}
+              Loading…
+            </div>
+          )}
+        </div>
+      </section>
 
-        {/* Language section */}
-        <div style={{ marginTop: "8px" }}>
-          <div
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: "8px",
-              letterSpacing: ".16em",
-              color: "#9a7830",
-              textTransform: "uppercase",
-              marginBottom: "8px",
-            }}
-          >
-            LANGUAGE
+      {/* CONTROLS */}
+      <div className="w4-controls">
+        {/* Language row */}
+        <div className="w4-lang-row">
+          <span className="w4-lang-label">Language</span>
+          <div className="w4-pills">
+            {languages.map((lang) => {
+              const isSoon =
+                lang.launch_status === "beta" ||
+                lang.launch_status === "pending";
+              const isActive = activeLanguage === lang.language_code;
+              return (
+                <button
+                  key={lang.language_code}
+                  className={isActive ? "w4-pill-active" : "w4-pill-inactive"}
+                  onClick={() => !isSoon && handleLangChange(lang.language_code)}
+                  disabled={isSoon}
+                  style={{
+                    opacity: isSoon ? 0.7 : 1,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "3px",
+                  }}
+                >
+                  {lang.language_name}
+                  {isSoon && (
+                    <sup
+                      style={{
+                        fontSize: "7px",
+                        color: isActive ? "#fff" : "#c9a227",
+                        marginLeft: "3px",
+                      }}
+                    >
+                      SOON
+                    </sup>
+                  )}
+                </button>
+              );
+            })}
           </div>
-          <LanguageSelector
-            languages={languages}
-            selectedCode={activeLanguage}
-            onChange={handleLanguageChange}
-          />
         </div>
 
-        {/* Translation selector */}
+        {/* Translation selector — when multiple available */}
         {translations.length > 1 && (
           <TranslationSelector
             translations={translations}
@@ -279,48 +271,75 @@ export default function HomeInteractive({
           />
         )}
 
-        {isPending && (
-          <span
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: "9px",
-              color: "#7a6030",
-              letterSpacing: "0.06em",
-            }}
+        {/* Tafsir toggle */}
+        <div>
+          <button
+            className="w4-tafsir-btn"
+            onClick={() => setTafsirOpen((o) => !o)}
+            aria-expanded={tafsirOpen}
           >
-            Loading…
-          </span>
-        )}
+            {tafsirOpen ? "Hide Tafsir ↑" : "Read Tafsir ↓"}
+          </button>
+          {tafsirOpen && (
+            <div className="w4-tafsir-text">
+              {tafsir
+                ? tafsir.text
+                : "Tafsir will be added as the collection grows. May Allah reward the scholars."}
+              {tafsir && (
+                <div
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: "10px",
+                    color: "#7a6030",
+                    letterSpacing: "0.08em",
+                    marginTop: "10px",
+                    fontStyle: "normal",
+                  }}
+                >
+                  — {tafsir.scholar}
+                  {tafsir.source_book && `, ${tafsir.source_book}`}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
-        {/* Tafsir */}
-        <div style={{ marginTop: "4px" }}>
-          <TafsirPanel tafsir={initialData.tafsir} />
+        {/* Bottom row */}
+        <div className="w4-bottom-row">
+          <div style={{ display: "flex", gap: "8px" }}>
+            <a
+              href="#"
+              className="w4-dl-btn"
+              tabIndex={-1}
+              onClick={(e) => e.preventDefault()}
+              style={{ opacity: 0.6, cursor: "not-allowed" }}
+            >
+              iOS — Soon
+            </a>
+            <a
+              href="#"
+              className="w4-dl-btn"
+              tabIndex={-1}
+              onClick={(e) => e.preventDefault()}
+              style={{ opacity: 0.6, cursor: "not-allowed" }}
+            >
+              Android — Soon
+            </a>
+          </div>
+          <div className="w4-links">
+            <Link href="/archive" className="w4-link">
+              Archive
+            </Link>
+            <Link href="/about" className="w4-link">
+              About
+            </Link>
+            <ShareButton
+              surahNumber={ayah.surah_number}
+              ayahNumber={ayah.ayah_number}
+            />
+          </div>
         </div>
       </div>
-
-      {/* BOTTOM — downloads + nav */}
-      <div>
-        <DownloadButtons />
-        <nav
-          style={{
-            display: "flex",
-            gap: "16px",
-            alignItems: "center",
-            marginTop: "10px",
-          }}
-        >
-          <Link href="/archive" className="footer-link">
-            ARCHIVE
-          </Link>
-          <Link href="/about" className="footer-link">
-            ABOUT
-          </Link>
-          <ShareButton
-            surahNumber={initialData.ayah.surah_number}
-            ayahNumber={initialData.ayah.ayah_number}
-          />
-        </nav>
-      </div>
-    </div>
+    </>
   );
 }
