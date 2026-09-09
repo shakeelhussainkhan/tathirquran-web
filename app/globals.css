@@ -181,3 +181,145 @@ details > summary::-webkit-details-marker {
   background: #c9a227;
   border-radius: 2px;
 }
+
+/* ── Concept 4: Dark/Ivory Split Layout ── */
+.split-layout {
+  display: grid;
+  grid-template-columns: 1fr 2px 1fr;
+  min-height: 100svh;
+  max-height: 100svh;
+  overflow: hidden;
+}
+.split-left {
+  background: #1a1005;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.split-divider {
+  background: linear-gradient(180deg, transparent 0%, #c9a227 15%, #e8c96a 50%, #c9a227 85%, transparent 100%);
+}
+.split-right {
+  background: #faf5e9;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.arabic-hero {
+  font-family: 'Amiri', serif;
+  font-size: 38px;
+  color: #f5ede0;
+  line-height: 1.85;
+  direction: rtl;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+.translation-hero {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-style: italic;
+  color: #1a1205;
+  line-height: 1.75;
+}
+.lang-pill-active {
+  background: #c9a227;
+  color: #fff;
+  padding: 5px 14px;
+  border-radius: 2px;
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+}
+.lang-pill-inactive {
+  border: 0.5px solid rgba(201,162,39,.35);
+  color: #9a7020;
+  padding: 5px 14px;
+  border-radius: 2px;
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  background: transparent;
+  cursor: pointer;
+  transition: background 150ms, color 150ms;
+}
+.lang-pill-inactive:hover {
+  background: rgba(201,162,39,.1);
+}
+.tafsir-toggle {
+  border: 0.5px solid rgba(201,162,39,.4);
+  color: #c9a227;
+  padding: 8px 16px;
+  border-radius: 2px;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  transition: background 150ms;
+}
+.tafsir-toggle:hover {
+  background: rgba(201,162,39,.06);
+}
+.download-btn {
+  border: 0.5px solid rgba(201,162,39,.35);
+  color: #9a7020;
+  padding: 6px 14px;
+  border-radius: 2px;
+  font-family: 'Inter', sans-serif;
+  font-size: 8px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  background: transparent;
+  cursor: pointer;
+  transition: background 150ms, color 150ms;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.download-btn:hover {
+  background: #c9a227;
+  color: #fff;
+}
+.footer-link {
+  font-family: 'Inter', sans-serif;
+  font-size: 8px;
+  color: rgba(201,162,39,.5);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color 150ms;
+}
+.footer-link:hover {
+  color: #c9a227;
+}
+@media (max-width: 768px) {
+  .split-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 2px auto;
+    max-height: none;
+    overflow: visible;
+  }
+  .split-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, #c9a227 15%, #e8c96a 50%, #c9a227 85%, transparent 100%);
+  }
+  .split-left {
+    min-height: 48vh;
+    overflow: visible;
+  }
+  .split-right {
+    min-height: 52vh;
+    overflow: visible;
+  }
+  .arabic-hero { font-size: 28px; }
+  .translation-hero { font-size: 17px; }
+}

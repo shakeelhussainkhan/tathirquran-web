@@ -1,0 +1,21 @@
+{
+  "name": "TathirQuran",
+  "short_name": "TathirQuran",
+  "description": "Daily Quran verse with Shia translations",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1005",
+  "theme_color": "#c9a227",
+  "icons": [
+    {
+      "src": "/icon",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-icon",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

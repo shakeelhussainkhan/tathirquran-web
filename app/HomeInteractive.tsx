@@ -1,20 +1,24 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import AyahCard from "@/components/AyahCard";
+import Link from "next/link";
 import LanguageSelector from "@/components/LanguageSelector";
 import TranslationSelector from "@/components/TranslationSelector";
 import TafsirPanel from "@/components/TafsirPanel";
+import DownloadButtons from "@/components/DownloadButtons";
+import ShareButton from "@/components/ShareButton";
 import type { Language, TodayAyahResponse, Translation } from "@/types";
 
 interface HomeInteractiveProps {
   initialData: TodayAyahResponse;
   languages: Language[];
+  readableDate: string;
 }
 
 export default function HomeInteractive({
   initialData,
   languages,
+  readableDate,
 }: HomeInteractiveProps) {
   const [activeLanguage, setActiveLanguage] = useState("en");
   const [translations, setTranslations] = useState<Translation[]>([]);
@@ -91,35 +95,182 @@ export default function HomeInteractive({
     return `${initialData.ayah.surah_number}-${initialData.ayah.ayah_number}`;
   }
 
-  return (
-    <>
-      {/* Hero — verse floats on parchment */}
-      <section className="tq-hero">
-        <AyahCard
-          data={initialData}
-          activeLanguage={activeLanguage}
-          overrideTranslation={overrideTranslation}
-        />
-      </section>
+  const displayTranslation = overrideTranslation ?? initialData.translation;
+  const isUrdu = activeLanguage === "ur";
+  const isRtlTranslation = ["ar", "fa", "ur"].includes(
+    displayTranslation?.language_code ?? activeLanguage
+  );
 
-      {/* Language + translation selector */}
-      <div className="tq-selectors">
-        <span
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        padding: "28px 32px",
+        justifyContent: "space-between",
+        minHeight: "inherit",
+      }}
+    >
+      {/* TOP — date + label */}
+      <div>
+        <div
           style={{
             fontFamily: "'Inter', sans-serif",
             fontSize: "9px",
-            letterSpacing: ".15em",
+            color: "#9a7830",
+            letterSpacing: ".05em",
+          }}
+        >
+          {readableDate}
+        </div>
+        <div
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "8px",
+            letterSpacing: ".18em",
+            color: "rgba(201,162,39,.55)",
+            textTransform: "uppercase",
+            marginTop: "3px",
+          }}
+        >
+          TODAY&apos;S AYAH
+        </div>
+      </div>
+
+      {/* CENTER — translation + controls */}
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          gap: "12px",
+          paddingTop: "24px",
+          paddingBottom: "24px",
+        }}
+      >
+        {/* Translation label */}
+        <div
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "8px",
+            letterSpacing: ".16em",
             color: "#9a7830",
             textTransform: "uppercase",
           }}
         >
-          Translation
-        </span>
-        <LanguageSelector
-          languages={languages}
-          selectedCode={activeLanguage}
-          onChange={handleLanguageChange}
-        />
+          TRANSLATION
+        </div>
+
+        {/* Translation text */}
+        {displayTranslation ? (
+          isUrdu ? (
+            <p
+              className="urdu-text"
+              style={{ fontSize: "20px", color: "#1a1205" }}
+              lang="ur"
+              dir="rtl"
+            >
+              {displayTranslation.text}
+            </p>
+          ) : (
+            <p
+              className="translation-hero"
+              style={{
+                maxWidth: "420px",
+                direction: isRtlTranslation ? "rtl" : "ltr",
+              }}
+              lang={displayTranslation.language_code}
+            >
+              &ldquo;{displayTranslation.text}&rdquo;
+            </p>
+          )
+        ) : (
+          <p
+            className="translation-hero"
+            style={{ color: "#7a6030" }}
+          >
+            Translation not yet available.
+          </p>
+        )}
+
+        {/* Ornament */}
+        <div
+          aria-hidden="true"
+          style={{ display: "flex", gap: "10px", alignItems: "center" }}
+        >
+          <div
+            style={{ width: "32px", height: "0.5px", background: "rgba(201,162,39,.35)" }}
+          />
+          <span style={{ color: "#c9a227", fontSize: "9px" }}>◆</span>
+          <div
+            style={{ width: "32px", height: "0.5px", background: "rgba(201,162,39,.35)" }}
+          />
+        </div>
+
+        {/* Scholar name */}
+        {displayTranslation?.scholar_name && (
+          <div
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: "10px",
+              color: "#c9a227",
+              letterSpacing: ".08em",
+            }}
+          >
+            {displayTranslation.scholar_name}
+          </div>
+        )}
+
+        {/* Urdu coming-soon notice */}
+        {isUrdu && (
+          <div
+            style={{
+              paddingTop: "12px",
+              borderTop: "0.5px solid rgba(201,162,39,.15)",
+              maxWidth: "380px",
+            }}
+          >
+            <p
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: "11px",
+                color: "#7a6030",
+                lineHeight: 1.6,
+              }}
+            >
+              Shia-verified Urdu translation coming soon. Permission requests sent
+              to{" "}
+              <span style={{ color: "#c9a227" }}>Allama Najafi</span>,{" "}
+              <span style={{ color: "#c9a227" }}>Syed Jawadi</span>, and{" "}
+              <span style={{ color: "#c9a227" }}>Maulana Farman Ali</span>.
+            </p>
+          </div>
+        )}
+
+        {/* Language section */}
+        <div style={{ marginTop: "8px" }}>
+          <div
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: "8px",
+              letterSpacing: ".16em",
+              color: "#9a7830",
+              textTransform: "uppercase",
+              marginBottom: "8px",
+            }}
+          >
+            LANGUAGE
+          </div>
+          <LanguageSelector
+            languages={languages}
+            selectedCode={activeLanguage}
+            onChange={handleLanguageChange}
+          />
+        </div>
+
+        {/* Translation selector */}
         {translations.length > 1 && (
           <TranslationSelector
             translations={translations}
@@ -127,6 +278,7 @@ export default function HomeInteractive({
             onChange={handleTranslationChange}
           />
         )}
+
         {isPending && (
           <span
             style={{
@@ -139,12 +291,36 @@ export default function HomeInteractive({
             Loading…
           </span>
         )}
+
+        {/* Tafsir */}
+        <div style={{ marginTop: "4px" }}>
+          <TafsirPanel tafsir={initialData.tafsir} />
+        </div>
       </div>
 
-      {/* Tafsir */}
-      <div className="tq-tafsir-wrap">
-        <TafsirPanel tafsir={initialData.tafsir} />
+      {/* BOTTOM — downloads + nav */}
+      <div>
+        <DownloadButtons />
+        <nav
+          style={{
+            display: "flex",
+            gap: "16px",
+            alignItems: "center",
+            marginTop: "10px",
+          }}
+        >
+          <Link href="/archive" className="footer-link">
+            ARCHIVE
+          </Link>
+          <Link href="/about" className="footer-link">
+            ABOUT
+          </Link>
+          <ShareButton
+            surahNumber={initialData.ayah.surah_number}
+            ayahNumber={initialData.ayah.ayah_number}
+          />
+        </nav>
       </div>
-    </>
+    </div>
   );
 }

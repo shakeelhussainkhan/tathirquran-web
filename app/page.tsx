@@ -1,10 +1,8 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import { getTodayAyahData, getLiveLanguages } from "@/lib/queries";
-import DownloadButtons from "@/components/DownloadButtons";
 import HomeInteractive from "@/app/HomeInteractive";
-import ShareButton from "@/components/ShareButton";
-import { formatReadableDate, gregorianToHijriString } from "@/lib/utils";
+import AyahCard from "@/components/AyahCard";
+import { formatReadableDate, gregorianToHijriString, verseRef } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -16,8 +14,8 @@ export default async function HomePage() {
     return (
       <main
         style={{
-          minHeight: "100vh",
-          backgroundColor: "#faf5e9",
+          minHeight: "100svh",
+          backgroundColor: "#1a1005",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -28,16 +26,12 @@ export default async function HomePage() {
           style={{
             fontFamily: "'Cormorant Garamond', serif",
             fontStyle: "italic",
-            color: "#7a6030",
+            color: "rgba(201,162,39,.6)",
             fontSize: "18px",
             textAlign: "center",
           }}
         >
           The database is being prepared. Please check back soon.
-          <br />
-          <span style={{ fontSize: "13px" }}>
-            Supabase migrations and seed data are pending.
-          </span>
         </p>
       </main>
     );
@@ -46,119 +40,165 @@ export default async function HomePage() {
   const today = new Date(data.date + "T00:00:00Z");
   const hijriDate = gregorianToHijriString(today);
   const readableDate = formatReadableDate(data.date);
+  const ref = verseRef(
+    data.surah.name_transliterated,
+    data.ayah.surah_number,
+    data.ayah.ayah_number
+  );
 
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        backgroundColor: "#faf5e9",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      {/* Header */}
-      <header className="tq-page-header">
-        <span
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: "10px",
-            letterSpacing: ".2em",
-            color: "#c9a227",
-            textTransform: "uppercase",
-          }}
-        >
-          TathirQuran
-        </span>
-        <span
-          style={{ fontFamily: "'Amiri', serif", fontSize: "14px", color: "#c9a227" }}
-          lang="ar"
-          dir="rtl"
-        >
-          تطهير القرآن
-        </span>
-      </header>
+    <div className="split-layout">
+      {/* LEFT PANEL — dark, sacred */}
+      <div className="split-left">
+        {/* Top branding */}
+        <div style={{ padding: "28px 32px", textAlign: "right" }}>
+          <div
+            lang="ar"
+            dir="rtl"
+            style={{
+              fontFamily: "'Amiri', serif",
+              fontSize: "16px",
+              color: "rgba(201,162,39,.8)",
+            }}
+          >
+            تطهير القرآن
+          </div>
+          <div
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: "8px",
+              letterSpacing: ".22em",
+              color: "rgba(201,162,39,.4)",
+              textTransform: "uppercase",
+              marginTop: "4px",
+            }}
+          >
+            TATHIRQURAN
+          </div>
+        </div>
 
-      {/* Date bar */}
-      <div className="tq-date-bar">
-        <span
+        {/* Center — verse */}
+        <div
           style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: "11px",
-            color: "#9a7830",
-            letterSpacing: ".05em",
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px 36px",
+            textAlign: "center",
+            position: "relative",
           }}
         >
-          {readableDate}
-        </span>
-        <span
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: "11px",
-            color: "#9a7830",
-            letterSpacing: ".05em",
-          }}
-          lang="ar"
-          dir="rtl"
-        >
-          {hijriDate}
-        </span>
+          {/* Radial glow */}
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              width: "300px",
+              height: "300px",
+              background: "radial-gradient(circle, rgba(201,162,39,.08), transparent 70%)",
+              pointerEvents: "none",
+              zIndex: 0,
+            }}
+          />
+
+          {/* Bismillah */}
+          <div
+            lang="ar"
+            dir="rtl"
+            style={{
+              fontFamily: "'Amiri', serif",
+              fontSize: "13px",
+              color: "rgba(201,162,39,.5)",
+              direction: "rtl",
+              marginBottom: "20px",
+              zIndex: 1,
+              position: "relative",
+            }}
+          >
+            بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
+          </div>
+
+          {/* Arabic verse */}
+          <AyahCard data={data} />
+
+          {/* Verse reference */}
+          <div
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: "9px",
+              letterSpacing: ".12em",
+              color: "rgba(201,162,39,.5)",
+              textTransform: "uppercase",
+              marginTop: "16px",
+              textAlign: "center",
+              position: "relative",
+              zIndex: 1,
+            }}
+          >
+            {ref}
+          </div>
+        </div>
+
+        {/* Bottom — hijri date */}
+        <div style={{ padding: "20px 32px", textAlign: "center" }}>
+          <div
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: "9px",
+              color: "rgba(201,162,39,.3)",
+              letterSpacing: ".08em",
+            }}
+          >
+            {hijriDate}
+          </div>
+          <div
+            aria-hidden="true"
+            style={{ color: "rgba(201,162,39,.2)", fontSize: "10px", marginTop: "6px" }}
+          >
+            ·  ·  ·
+          </div>
+        </div>
       </div>
 
-      {/* Main interactive content — hero + selectors + tafsir */}
-      <Suspense
-        fallback={
-          <div className="tq-hero">
-            <p
-              style={{
-                fontFamily: "'Amiri', serif",
-                fontSize: "16px",
-                color: "rgba(201,162,39,.5)",
-                textAlign: "center",
-              }}
-            >
-              بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
-            </p>
-          </div>
-        }
-      >
-        <HomeInteractive initialData={data} languages={languages} />
-      </Suspense>
+      {/* GOLD DIVIDER */}
+      <div className="split-divider" aria-hidden="true" />
 
-      {/* Footer */}
-      <footer className="tq-page-footer">
-        <DownloadButtons />
-        <nav
-          style={{
-            display: "flex",
-            gap: "16px",
-            alignItems: "center",
-          }}
-        >
-          {[
-            { href: "/archive", label: "Archive" },
-            { href: "/about", label: "About" },
-          ].map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
+      {/* RIGHT PANEL — ivory, readable */}
+      <div className="split-right">
+        <Suspense
+          fallback={
+            <div
               style={{
-                fontFamily: "'Inter', sans-serif",
-                fontSize: "9px",
-                color: "#c9a227",
-                textDecoration: "none",
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "40px",
               }}
             >
-              {label}
-            </Link>
-          ))}
-          <ShareButton
-            surahNumber={data.ayah.surah_number}
-            ayahNumber={data.ayah.ayah_number}
+              <p
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: "9px",
+                  color: "#9a7830",
+                  letterSpacing: ".1em",
+                  textTransform: "uppercase",
+                }}
+              >
+                Loading…
+              </p>
+            </div>
+          }
+        >
+          <HomeInteractive
+            initialData={data}
+            languages={languages}
+            readableDate={readableDate}
           />
-        </nav>
-      </footer>
-    </main>
+        </Suspense>
+      </div>
+    </div>
   );
 }
