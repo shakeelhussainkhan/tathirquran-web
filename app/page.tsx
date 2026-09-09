@@ -6,6 +6,7 @@ import TafsirPanel from "@/components/TafsirPanel";
 import DownloadButtons from "@/components/DownloadButtons";
 import LockScreenPreview from "@/components/LockScreenPreview";
 import HomeInteractive from "@/app/HomeInteractive";
+import ShareButton from "@/components/ShareButton";
 import { formatReadableDate, gregorianToHijriString } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -207,31 +208,10 @@ export default async function HomePage() {
             ))}
           </nav>
 
-          <button
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              fontFamily: "'Inter', sans-serif",
-              fontSize: "11px",
-              color: "#c9a227",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              display: "flex",
-              alignItems: "center",
-              gap: "4px",
-              padding: 0,
-            }}
-            onClick={() => {
-              if (typeof navigator !== "undefined") {
-                navigator.clipboard?.writeText(
-                  `${window.location.origin}/ayah/${data.ayah.surah_number}/${data.ayah.ayah_number}`
-                );
-              }
-            }}
-          >
-            Share this ayah →
-          </button>
+          <ShareButton
+            surahNumber={data.ayah.surah_number}
+            ayahNumber={data.ayah.ayah_number}
+          />
         </div>
 
         <p
