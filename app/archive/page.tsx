@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { getRecentSchedule, getAyahById, getSurah } from "@/lib/queries";
 import { formatReadableDate, gregorianToHijriString } from "@/lib/utils";
-import BronzeBar from "@/components/BronzeBar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Archive — TathirQuran",
-  description: "Browse past daily ayahs from TathirQuran.",
+  description: "Browse the past 60 days of daily ayahs from TathirQuran.",
 };
 
 export const dynamic = "force-dynamic";
@@ -14,7 +13,6 @@ export const dynamic = "force-dynamic";
 export default async function ArchivePage() {
   const schedule = await getRecentSchedule(60);
 
-  // Fetch ayah + surah for each entry
   const entries = await Promise.all(
     schedule.map(async (s) => {
       const ayah = await getAyahById(s.ayah_id);
@@ -24,80 +22,213 @@ export default async function ArchivePage() {
   );
 
   return (
-    <main style={{ maxWidth: "680px", margin: "0 auto", padding: "0 24px 64px" }}>
-      <header style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", paddingTop: "32px", paddingBottom: "12px" }}>
-        <Link href="/" style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#c9a227", letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600, textDecoration: "none" }}>
-          ← TathirQuran
-        </Link>
-        <span style={{ fontFamily: "'Amiri', serif", fontSize: "14px", color: "#c9a227" }} lang="ar" dir="rtl">تطهیر القرآن</span>
+    <main className="w4-page">
+      {/* TOP GOLD BAR */}
+      <div className="w4-gold-bar" />
+
+      {/* HEADER */}
+      <header className="w4-header">
+        <span
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "9px",
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            color: "#c9a227",
+          }}
+        >
+          TathirQuran
+        </span>
+        <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+          <span
+            style={{
+              fontFamily: "'Amiri', serif",
+              fontSize: "13px",
+              color: "#c9a227",
+              direction: "rtl",
+            }}
+            lang="ar"
+            dir="rtl"
+          >
+            تطهير القرآن
+          </span>
+        </div>
       </header>
-      <div style={{ height: "0.5px", background: "linear-gradient(90deg, #e8c96a, #c9a227 40%, transparent)", marginBottom: "32px" }} aria-hidden="true" />
 
-      <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "28px", color: "#0d0a04", fontWeight: 500, marginBottom: "8px" }}>
-        Archive
-      </h1>
-      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#7a6030", letterSpacing: "0.04em", marginBottom: "36px" }}>
-        Daily ayahs — most recent first
-      </p>
+      {/* BODY */}
+      <div
+        style={{
+          flex: 1,
+          maxWidth: "720px",
+          width: "100%",
+          margin: "0 auto",
+          padding: "32px 32px 64px",
+        }}
+      >
+        {/* Back link */}
+        <Link
+          href="/"
+          style={{
+            display: "inline-block",
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "10px",
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            color: "#c9a227",
+            textDecoration: "none",
+            marginBottom: "28px",
+          }}
+        >
+          ← Back to Today
+        </Link>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-        {entries.map(({ schedule: s, ayah, surah }) => {
-          if (!ayah || !surah) return null;
-          const date = new Date(s.schedule_date + "T00:00:00Z");
-          const hijri = gregorianToHijriString(date);
-          const isSpecial = s.reason === "islamic_calendar" || s.reason === "special";
+        <h1
+          style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: "26px",
+            fontWeight: 400,
+            color: "#0d0a04",
+            marginBottom: "4px",
+          }}
+        >
+          Archive
+        </h1>
+        <p
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "10px",
+            color: "#7a6030",
+            letterSpacing: "0.06em",
+            marginBottom: "28px",
+          }}
+        >
+          Past 60 days · most recent first
+        </p>
 
-          return (
-            <Link
-              key={s.schedule_date}
-              href={`/ayah/${ayah.surah_number}/${ayah.ayah_number}`}
-              style={{ textDecoration: "none" }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  gap: 0,
-                  overflow: "hidden",
-                  backgroundColor: "#fdfaf4",
-                  border: "1px solid rgba(201,162,39,0.12)",
-                  transition: "border-color 0.15s ease",
-                }}
+        {/* Row list */}
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          {entries.map(({ schedule: s, ayah, surah }, idx) => {
+            if (!ayah || !surah) return null;
+            const date = new Date(s.schedule_date + "T00:00:00Z");
+            const hijri = gregorianToHijriString(date);
+            const readable = formatReadableDate(s.schedule_date);
+
+            return (
+              <Link
+                key={s.schedule_date}
+                href={`/ayah/${ayah.surah_number}/${ayah.ayah_number}`}
+                style={{ textDecoration: "none", color: "inherit" }}
               >
-                <div style={{ width: "3px", background: isSpecial ? "linear-gradient(180deg, #e8c96a, #c9a227, #8b6520)" : "rgba(201,162,39,0.2)", flexShrink: 0 }} />
-                <div style={{ flex: 1, padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "160px 1fr auto",
+                    alignItems: "center",
+                    gap: "16px",
+                    padding: "14px 0",
+                    borderBottom:
+                      idx < entries.length - 1
+                        ? "0.5px solid rgba(201,162,39,0.12)"
+                        : "none",
+                    cursor: "pointer",
+                    transition: "background 0.12s",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.background =
+                      "rgba(201,162,39,0.04)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.background =
+                      "transparent";
+                  }}
+                >
+                  {/* Date column */}
                   <div>
-                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", color: "#7a6030", letterSpacing: "0.06em", marginBottom: "4px" }}>
-                      {formatReadableDate(s.schedule_date)}
-                      {isSpecial && (
-                        <span style={{ marginLeft: "8px", color: "#c9a227" }}>
-                          · {s.notes ?? "special occasion"}
-                        </span>
-                      )}
+                    <p
+                      style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: "10px",
+                        color: "#7a6030",
+                        letterSpacing: "0.04em",
+                        marginBottom: "2px",
+                      }}
+                    >
+                      {readable}
                     </p>
-                    <p style={{ fontFamily: "'Amiri', serif", fontSize: "15px", color: "#0d0a04", direction: "rtl", textAlign: "right" }} lang="ar" dir="rtl">
-                      {ayah.arabic_uthmani.slice(0, 60)}{ayah.arabic_uthmani.length > 60 ? "…" : ""}
-                    </p>
-                  </div>
-                  <div style={{ textAlign: "right" }}>
-                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", color: "#c9a227", letterSpacing: "0.10em", textTransform: "uppercase" }}>
-                      {surah.name_transliterated} {ayah.surah_number}:{ayah.ayah_number}
-                    </p>
-                    <p style={{ fontFamily: "'Amiri', serif", fontSize: "11px", color: "#7a6030", direction: "rtl" }} lang="ar" dir="rtl">
+                    <p
+                      style={{
+                        fontFamily: "'Amiri', serif",
+                        fontSize: "11px",
+                        color: "rgba(201,162,39,0.7)",
+                        direction: "rtl",
+                      }}
+                      lang="ar"
+                      dir="rtl"
+                    >
                       {hijri}
                     </p>
                   </div>
+
+                  {/* Arabic snippet */}
+                  <p
+                    style={{
+                      fontFamily: "'Amiri', serif",
+                      fontSize: "16px",
+                      color: "#0d0a04",
+                      direction: "rtl",
+                      textAlign: "right",
+                      lineHeight: 1.7,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                    lang="ar"
+                    dir="rtl"
+                  >
+                    {ayah.arabic_uthmani.slice(0, 80)}
+                    {ayah.arabic_uthmani.length > 80 ? "…" : ""}
+                  </p>
+
+                  {/* Surah ref */}
+                  <p
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: "10px",
+                      color: "#c9a227",
+                      letterSpacing: "0.10em",
+                      textTransform: "uppercase",
+                      whiteSpace: "nowrap",
+                      textAlign: "right",
+                    }}
+                  >
+                    {surah.name_transliterated} {ayah.surah_number}:
+                    {ayah.ayah_number}
+                  </p>
                 </div>
-              </div>
-            </Link>
-          );
-        })}
+              </Link>
+            );
+          })}
+        </div>
+
+        {entries.length === 0 && (
+          <p
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontStyle: "italic",
+              color: "#7a6030",
+              fontSize: "18px",
+              textAlign: "center",
+              marginTop: "60px",
+            }}
+          >
+            No archive entries yet. The daily schedule will appear here once
+            ayahs are scheduled.
+          </p>
+        )}
       </div>
 
-      {entries.length === 0 && (
-        <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", color: "#7a6030", fontSize: "18px" }}>
-          No archive entries yet. The daily schedule will appear here once the database is seeded.
-        </p>
-      )}
+      {/* BOTTOM GOLD BAR */}
+      <div className="w4-gold-bar" />
     </main>
   );
 }
