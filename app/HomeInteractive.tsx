@@ -4,7 +4,8 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import TranslationSelector from "@/components/TranslationSelector";
 import ShareButton from "@/components/ShareButton";
-import type { Language, TodayAyahResponse, Translation } from "@/types";
+import TafsirPanel from "@/components/TafsirPanel";
+import type { Language, TodayAyahResponse, Translation, Tafsir } from "@/types";
 
 interface HomeInteractiveProps {
   initialData: TodayAyahResponse;
@@ -23,7 +24,7 @@ export default function HomeInteractive({
   const [overrideTranslation, setOverrideTranslation] = useState<
     TodayAyahResponse["translation"] | null
   >(null);
-  const [tafsirOpen, setTafsirOpen] = useState(false);
+  const [overrideTafsirEntries, setOverrideTafsirEntries] = useState<Tafsir[] | null>(null);
   const [isPending, startTransition] = useTransition();
 
   function getAyahId(): string {
@@ -35,6 +36,7 @@ export default function HomeInteractive({
 
     if (code === "en") {
       setOverrideTranslation(null);
+      setOverrideTafsirEntries(null);
       setTranslations([]);
       setSelectedTranslationId(null);
       return;
@@ -99,7 +101,8 @@ export default function HomeInteractive({
     displayTranslation?.language_code ?? activeLanguage
   );
 
-  const { ayah, surah, tafsir } = initialData;
+  const { ayah, surah, tafsirEntries } = initialData;
+  const currentTafsirEntries = overrideTafsirEntries ?? tafsirEntries;
 
   return (
     <>
@@ -271,38 +274,8 @@ export default function HomeInteractive({
           />
         )}
 
-        {/* Tafsir toggle */}
-        <div>
-          <button
-            className="w4-tafsir-btn"
-            onClick={() => setTafsirOpen((o) => !o)}
-            aria-expanded={tafsirOpen}
-          >
-            {tafsirOpen ? "Hide Tafsir ↑" : "Read Tafsir ↓"}
-          </button>
-          {tafsirOpen && (
-            <div className="w4-tafsir-text">
-              {tafsir
-                ? tafsir.text
-                : "Tafsir will be added as the collection grows. May Allah reward the scholars."}
-              {tafsir && (
-                <div
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: "10px",
-                    color: "#7a6030",
-                    letterSpacing: "0.08em",
-                    marginTop: "10px",
-                    fontStyle: "normal",
-                  }}
-                >
-                  — {tafsir.scholar}
-                  {tafsir.source_book && `, ${tafsir.source_book}`}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+        {/* Tafsir panel */}
+        <TafsirPanel tafsirEntries={currentTafsirEntries} />
 
         {/* Bottom row */}
         <div className="w4-bottom-row">

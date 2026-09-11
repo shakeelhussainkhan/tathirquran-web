@@ -188,6 +188,19 @@ export async function getTafsirForAyah(
   return data as Tafsir;
 }
 
+export async function getAllTafsirForAyah(
+  ayahId: number,
+  languageCode = "en"
+): Promise<Tafsir[]> {
+  const { data } = await supabase
+    .from("tafsir")
+    .select("*")
+    .eq("ayah_id", ayahId)
+    .eq("language_code", languageCode)
+    .order("scholar");
+  return (data as Tafsir[]) ?? [];
+}
+
 // ---------- Composed Queries ----------
 
 /**
@@ -231,15 +244,8 @@ export async function getTodayAyahData(): Promise<TodayAyahResponse | null> {
     }
   }
 
-  // Tafsir (best-effort)
-  const tafsirRow = await getTafsirForAyah(ayah.ayah_id);
-  const tafsir = tafsirRow
-    ? {
-        text: tafsirRow.text,
-        scholar: tafsirRow.scholar,
-        source_book: tafsirRow.source_book,
-      }
-    : null;
+  // Tafsir (best-effort, all scholars)
+  const tafsirEntries = await getAllTafsirForAyah(ayah.ayah_id);
 
   const dateObj = new Date(today + "T00:00:00Z");
   const hijriDate = gregorianToHijriString(dateObj);
@@ -259,7 +265,7 @@ export async function getTodayAyahData(): Promise<TodayAyahResponse | null> {
       name_transliterated: surah.name_transliterated,
     },
     translation: translationText,
-    tafsir,
+    tafsirEntries,
   };
 }
 

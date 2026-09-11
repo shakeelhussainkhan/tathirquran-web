@@ -80,7 +80,7 @@ const WIDGET_EXAMPLE: TodayAyahResponse = {
     scholar_name: "M.H. Shakir",
     language_code: "en",
   },
-  tafsir: null,
+  tafsirEntries: [],
 };
 
 function SectionLabel({ children }: { children: React.ReactNode }) {

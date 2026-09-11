@@ -109,11 +109,7 @@ export interface TodayAyahResponse {
     scholar_name: string;
     language_code: string;
   } | null;
-  tafsir: {
-    text: string;
-    scholar: string;
-    source_book: string | null;
-  } | null;
+  tafsirEntries: Tafsir[];
 }
 
 export interface AyahPageData {
