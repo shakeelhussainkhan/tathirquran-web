@@ -333,6 +333,12 @@ export default function HomeInteractive({
             <Link href="/about" className="w4-link">
               About
             </Link>
+            <Link href="/privacy" className="w4-link">
+              Privacy
+            </Link>
+            <Link href="/terms" className="w4-link">
+              Terms
+            </Link>
             <ShareButton
               surahNumber={ayah.surah_number}
               ayahNumber={ayah.ayah_number}

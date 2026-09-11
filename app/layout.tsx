@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: 'TathirQuran — Daily Shia Quran Verse',
   description: 'Start every morning with a verse from the Holy Quran. Shia-verified translations by M.H. Shakir, Muhammad Sarwar, and Mahdi Ilahi Ghomshei. Free app by Five S LLC.',
   keywords: ["Quran", "Shia", "daily ayah", "Islamic", "Quran app", "تطهیر"],
+  alternates: {
+    canonical: 'https://tathirquran.com',
+  },
   icons: {
     icon: '/icon',
     apple: '/apple-icon',
@@ -37,6 +40,26 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#1a1005" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              "name": "TathirQuran",
+              "description": "Daily Quran verse with Shia translations",
+              "url": "https://tathirquran.com",
+              "applicationCategory": "ReligiousApplication",
+              "operatingSystem": "iOS, Android, Web",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+              "author": {
+                "@type": "Organization",
+                "name": "Five S LLC",
+                "location": "San Jose, California, USA"
+              }
+            })
+          }}
+        />
       </head>
       <body className="min-h-screen">
         {children}

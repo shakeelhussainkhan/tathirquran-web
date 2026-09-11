@@ -427,6 +427,121 @@ export default function AboutPage() {
 
         <Divider />
 
+        {/* 3B. Scholars & Translations Table */}
+        <section>
+          <SectionLabel>Scholars &amp; Translations</SectionLabel>
+          <div style={{ overflowX: "auto" }}>
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                fontFamily: "'Inter', sans-serif",
+                fontSize: "12px",
+              }}
+            >
+              <thead>
+                <tr
+                  style={{
+                    background: "#8b6520",
+                    color: "#faf5e9",
+                  }}
+                >
+                  <th style={{ padding: "10px 12px", textAlign: "left", letterSpacing: "0.06em", fontWeight: 500 }}>Language</th>
+                  <th style={{ padding: "10px 12px", textAlign: "left", letterSpacing: "0.06em", fontWeight: 500 }}>Scholar</th>
+                  <th style={{ padding: "10px 12px", textAlign: "left", letterSpacing: "0.06em", fontWeight: 500 }}>School</th>
+                  <th style={{ padding: "10px 12px", textAlign: "left", letterSpacing: "0.06em", fontWeight: 500 }}>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { lang: "English", scholar: "M.H. Shakir", school: "Shia Ithna Ashari", status: "✓ Live", live: true },
+                  { lang: "English", scholar: "Muhammad Sarwar", school: "Shia Ithna Ashari", status: "✓ Live", live: true },
+                  { lang: "Persian", scholar: "Mahdi Ilahi Ghomshei", school: "Iranian Shia", status: "✓ Live", live: true },
+                  { lang: "Urdu", scholar: "Allama M.H. Najafi (RA)", school: "Shia Ithna Ashari", status: "⏳ Permission requested", live: false },
+                  { lang: "Urdu", scholar: "Syed Z.H. Jawadi (RA)", school: "Shia Ithna Ashari", status: "⏳ Permission requested", live: false },
+                  { lang: "Urdu", scholar: "Maulana Farman Ali (RA)", school: "Shia Ithna Ashari", status: "⏳ Permission requested", live: false },
+                ].map((row, i) => (
+                  <tr
+                    key={i}
+                    style={{
+                      background: i % 2 === 0 ? "#faf5e9" : "rgba(201,162,39,0.05)",
+                      borderBottom: "0.5px solid rgba(201,162,39,0.15)",
+                    }}
+                  >
+                    <td style={{ padding: "10px 12px", color: "#2a1f08" }}>{row.lang}</td>
+                    <td style={{ padding: "10px 12px", color: "#0d0a04" }}>{row.scholar}</td>
+                    <td style={{ padding: "10px 12px", color: "#7a6030" }}>{row.school}</td>
+                    <td style={{ padding: "10px 12px", color: row.live ? "#c9a227" : "#9a7830" }}>{row.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <Divider />
+
+        {/* 3C. Coming Soon */}
+        <section>
+          <SectionLabel>Coming Soon</SectionLabel>
+          <ul
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px",
+              paddingLeft: "0",
+              listStyle: "none",
+            }}
+          >
+            {[
+              "iOS App with native lock screen widget",
+              "Android App with home screen widget",
+              "More languages (Turkish, French, Spanish, Indonesian, and more)",
+              "Tafsir from Al-Mizan (Allamah Tabataba'i)",
+              "Audio recitation by Shia qaris",
+            ].map((item, i) => (
+              <li
+                key={i}
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "10px",
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "16px",
+                  color: "#2a1f08",
+                  lineHeight: 1.6,
+                }}
+              >
+                <span style={{ color: "#c9a227", flexShrink: 0, marginTop: "2px" }}>◆</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <Divider />
+
+        {/* 3D. Islamic Calendar */}
+        <section>
+          <SectionLabel>Islamic Calendar</SectionLabel>
+          <p
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: "16px",
+              color: "#2a1f08",
+              lineHeight: 1.75,
+            }}
+          >
+            TathirQuran observes the Shia Islamic calendar. Special ayahs are
+            curated for Ashura (Muharram 10), Arbaeen (Safar 20), Eid
+            al-Ghadeer (Dhul Hijjah 18), Laylat al-Qadr (Ramadan 23), Wiladat
+            of the Holy Prophet (SAWW), and the birthdays and martyrdom
+            anniversaries of the 14 Masoomeen (AS).
+          </p>
+        </section>
+
+        <Divider />
+
         {/* 4. Lock Screen Preview */}
         <section>
           <SectionLabel>Lock Screen Widget Preview</SectionLabel>
