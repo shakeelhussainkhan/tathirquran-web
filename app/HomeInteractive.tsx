@@ -5,16 +5,19 @@ import Link from "next/link";
 import TranslationSelector from "@/components/TranslationSelector";
 import ShareButton from "@/components/ShareButton";
 import TafsirPanel from "@/components/TafsirPanel";
+import AudioPlayer from "@/components/AudioPlayer";
 import type { Language, TodayAyahResponse, Translation, Tafsir } from "@/types";
 
 interface HomeInteractiveProps {
   initialData: TodayAyahResponse;
   languages: Language[];
+  occasion?: { occasion: string; priority: number; ayah_id: number } | null;
 }
 
 export default function HomeInteractive({
   initialData,
   languages,
+  occasion,
 }: HomeInteractiveProps) {
   const [activeLanguage, setActiveLanguage] = useState("en");
   const [translations, setTranslations] = useState<Translation[]>([]);
@@ -110,6 +113,25 @@ export default function HomeInteractive({
 
   return (
     <>
+      {/* Islamic occasion banner */}
+      {occasion && (
+        <div
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "10px",
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            color: "#fff",
+            background: "#c9a227",
+            padding: "6px 20px",
+            textAlign: "center",
+            width: "100%",
+          }}
+        >
+          ☪ {occasion.occasion}
+        </div>
+      )}
+
       {/* HERO — verse centred on parchment */}
       <section className="w4-hero">
         {/* Islamic geometric watermark */}
@@ -226,6 +248,14 @@ export default function HomeInteractive({
             </div>
           )}
 
+          {/* Audio player */}
+          <div style={{ marginTop: "16px" }}>
+            <AudioPlayer
+              surahNumber={ayah.surah_number}
+              ayahNumber={ayah.ayah_number}
+            />
+          </div>
+
           {isPending && (
             <div
               style={{
@@ -334,6 +364,8 @@ export default function HomeInteractive({
             <ShareButton
               surahNumber={ayah.surah_number}
               ayahNumber={ayah.ayah_number}
+              arabicText={ayah.arabic_uthmani}
+              translationText={displayTranslation?.text}
             />
           </div>
         </div>

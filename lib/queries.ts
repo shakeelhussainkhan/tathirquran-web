@@ -295,6 +295,29 @@ export async function getAyahPageData(
   return { ayah, surah, translations, tafsir };
 }
 
+// ---------- Islamic Calendar ----------
+
+export async function getTodayIslamicOccasion(): Promise<{ occasion: string; priority: number; ayah_id: number } | null> {
+  const today = new Date();
+  const formatter = new Intl.DateTimeFormat("en-u-ca-islamic-umalqura", {
+    day: "numeric",
+    month: "numeric",
+  });
+  const parts = formatter.formatToParts(today);
+  const hijriDay = parseInt(parts.find((p) => p.type === "day")?.value ?? "0");
+  const hijriMonth = parseInt(parts.find((p) => p.type === "month")?.value ?? "0");
+
+  const { data } = await supabase
+    .from("islamic_calendar_tags")
+    .select("occasion, priority, ayah_id")
+    .eq("hijri_month", hijriMonth)
+    .eq("hijri_day", hijriDay)
+    .order("priority", { ascending: false })
+    .limit(1);
+
+  return (data?.[0] as { occasion: string; priority: number; ayah_id: number }) ?? null;
+}
+
 // ---------- Permissions ----------
 
 export async function getPermissionRequests(): Promise<PermissionRequest[]> {

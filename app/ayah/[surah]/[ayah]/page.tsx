@@ -65,8 +65,27 @@ export default async function AyahPage({ params }: Props) {
   const isRTL = (lang: string) =>
     lang === "ar" || lang === "fa" || lang === "ur";
 
+  const enText = enTranslation?.text ?? "";
+
   return (
     <main className="w4-page">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            name: `Quran ${surahNum}:${ayahNum}`,
+            description: enText.slice(0, 160),
+            isPartOf: { "@type": "Book", name: "The Holy Quran" },
+            publisher: {
+              "@type": "Organization",
+              name: "TathirQuran",
+              url: "https://tathirquran.com",
+            },
+          }),
+        }}
+      />
       {/* TOP GOLD BAR */}
       <div className="w4-gold-bar" />
 

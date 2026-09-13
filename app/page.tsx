@@ -1,12 +1,15 @@
-import { getTodayAyahData, getLiveLanguages } from "@/lib/queries";
+import { getTodayAyahData, getLiveLanguages, getTodayIslamicOccasion } from "@/lib/queries";
 import HomeInteractive from "@/app/HomeInteractive";
 import { formatReadableDate, gregorianToHijriString } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const data = await getTodayAyahData();
-  const languages = await getLiveLanguages();
+  const [data, languages, occasion] = await Promise.all([
+    getTodayAyahData(),
+    getLiveLanguages(),
+    getTodayIslamicOccasion(),
+  ]);
 
   if (!data) {
     return (
@@ -97,7 +100,7 @@ export default async function HomePage() {
       </header>
 
       {/* HERO + CONTROLS — HomeInteractive owns everything reactive */}
-      <HomeInteractive initialData={data} languages={languages} />
+      <HomeInteractive initialData={data} languages={languages} occasion={occasion} />
 
       {/* BOTTOM GOLD BAR */}
       <div className="w4-gold-bar" />
