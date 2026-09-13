@@ -36,17 +36,24 @@ export function formatHijriDate(h: HijriDate): string {
 }
 
 export function gregorianToHijriString(date: Date): string {
+  const HIJRI_MONTHS = [
+    'Muharram', 'Safar', 'Rabi al-Awwal', 'Rabi al-Thani',
+    'Jumada al-Awwal', 'Jumada al-Thani', 'Rajab', 'Shaban',
+    'Ramadan', 'Shawwal', 'Dhul Qadah', 'Dhul Hijjah',
+  ];
+
   try {
-    const formatter = new Intl.DateTimeFormat("en-u-ca-islamic-umalqura", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
+    const formatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
+      day: 'numeric',
+      month: 'numeric',
+      year: 'numeric',
     });
     const parts = formatter.formatToParts(date);
-    const day = parts.find((p) => p.type === "day")?.value ?? "";
-    const month = parts.find((p) => p.type === "month")?.value ?? "";
-    const year = parts.find((p) => p.type === "year")?.value ?? "";
-    return `${day} ${month} ${year} AH`;
+    const day = parts.find((p) => p.type === 'day')?.value ?? '';
+    const monthNum = parseInt(parts.find((p) => p.type === 'month')?.value ?? '1');
+    const year = parts.find((p) => p.type === 'year')?.value ?? '';
+    const monthName = HIJRI_MONTHS[monthNum - 1] ?? 'Unknown';
+    return `${day} ${monthName} ${year} AH`;
   } catch {
     const h = toHijri(date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate());
     return formatHijriDate(h);
