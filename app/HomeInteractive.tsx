@@ -25,6 +25,7 @@ export default function HomeInteractive({
     TodayAyahResponse["translation"] | null
   >(null);
   const [overrideTafsirEntries, setOverrideTafsirEntries] = useState<Tafsir[] | null>(null);
+  const [attributionText, setAttributionText] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   function getAyahId(): string {
@@ -39,6 +40,7 @@ export default function HomeInteractive({
       setOverrideTafsirEntries(null);
       setTranslations([]);
       setSelectedTranslationId(null);
+      setAttributionText(null);
       return;
     }
 
@@ -55,6 +57,7 @@ export default function HomeInteractive({
         if (trans.length > 0) {
           const defaultTrans = trans.find((t) => t.is_default) ?? trans[0];
           setSelectedTranslationId(defaultTrans.translation_id);
+          setAttributionText(defaultTrans.attribution_text ?? null);
 
           const ayahData = ayahRes.ok ? await ayahRes.json() : null;
           if (ayahData?.text) {
@@ -77,6 +80,7 @@ export default function HomeInteractive({
     setSelectedTranslationId(id);
     const trans = translations.find((t) => t.translation_id === id);
     if (!trans) return;
+    setAttributionText(trans.attribution_text ?? null);
 
     try {
       const res = await fetch(
@@ -176,7 +180,7 @@ export default function HomeInteractive({
             isUrdu ? (
               <p
                 className="urdu-text"
-                style={{ fontSize: "22px", color: "#1a1205", textAlign: "center" }}
+                style={{ fontSize: "22px", color: "#1a1205" }}
                 lang="ur"
                 dir="rtl"
               >
@@ -204,6 +208,21 @@ export default function HomeInteractive({
           {displayTranslation?.scholar_name && (
             <div className="w4-scholar">
               {displayTranslation.scholar_name}
+            </div>
+          )}
+
+          {attributionText && (
+            <div
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: "9px",
+                color: "#c9a227",
+                textAlign: "center",
+                marginTop: "4px",
+                letterSpacing: "0.03em",
+              }}
+            >
+              {attributionText}
             </div>
           )}
 

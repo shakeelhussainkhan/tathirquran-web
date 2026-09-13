@@ -139,6 +139,7 @@ export async function getTranslationsForLanguage(
     .from("translations")
     .select("*")
     .eq("language_code", languageCode)
+    .gt("completeness_pct", 0)
     .order("is_default", { ascending: false });
   if (error) throw error;
   return data as Translation[];

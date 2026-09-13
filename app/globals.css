@@ -84,7 +84,7 @@ body {
 .urdu-text {
   font-family: 'Noto Nastaliq Urdu', serif;
   direction: rtl;
-  text-align: right;
+  text-align: center;
   line-height: 2.2;
 }
 
