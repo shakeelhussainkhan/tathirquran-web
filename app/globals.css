@@ -460,7 +460,7 @@ details > summary::-webkit-details-marker {
 }
 
 @media (max-width: 768px) {
-  .w4-header { padding: 14px 20px; }
+  .w4-header { padding: 12px 20px !important; }
   .w4-hero { padding: 24px 20px; }
   .w4-arabic { font-size: 32px; }
   .w4-translation { font-size: 18px; }
@@ -472,6 +472,8 @@ details > summary::-webkit-details-marker {
   .w4-pill-inactive { font-size: 10px; }
   .w4-link { font-size: 10px; }
   .w4-dl-btn { font-size: 10px; }
+  .tq-header-icon { width: 36px !important; height: 36px !important; }
+  .tq-header-dates { display: none !important; }
 }
 
 /* ── Concept 4: Dark/Ivory Split Layout ── */

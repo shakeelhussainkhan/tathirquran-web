@@ -52,50 +52,74 @@ export default async function HomePage() {
       <div className="w4-gold-bar" />
 
       {/* HEADER */}
-      <header className="w4-header">
-        <span
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: "11px",
-            letterSpacing: "0.18em",
-            textTransform: "uppercase",
-            color: "#c9a227",
-          }}
+      <header className="w4-header" style={{ padding: "14px 40px" }}>
+        {/* LEFT: Photo icon + stacked brand names */}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <img
+            src="/apple-icon.png"
+            alt="TathirQuran"
+            className="tq-header-icon"
+            style={{
+              width: "44px",
+              height: "44px",
+              borderRadius: "8px",
+              objectFit: "cover",
+              objectPosition: "center top",
+              border: "0.5px solid rgba(139,101,32,0.4)",
+              flexShrink: 0,
+            }}
+          />
+          <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+            <span
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "9px",
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "#c9a227",
+                lineHeight: 1,
+              }}
+            >
+              TathirQuran
+            </span>
+            <span
+              style={{
+                fontFamily: "Amiri, serif",
+                fontSize: "14px",
+                color: "rgba(201,162,39,0.75)",
+                lineHeight: 1.2,
+                direction: "rtl",
+              }}
+            >
+              تطهير القرآن
+            </span>
+          </div>
+        </div>
+
+        {/* RIGHT: Gregorian + Hijri dates stacked */}
+        <div
+          className="tq-header-dates"
+          style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "2px" }}
         >
-          TathirQuran
-        </span>
-        <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
           <span
             style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: "11px",
-              letterSpacing: "0.04em",
+              fontFamily: "Inter, sans-serif",
+              fontSize: "9px",
               color: "#9a7830",
+              letterSpacing: "0.04em",
             }}
           >
             {readableDate}
           </span>
           <span
             style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: "11px",
+              fontFamily: "Inter, sans-serif",
+              fontSize: "9px",
+              color: "rgba(201,162,39,0.65)",
               letterSpacing: "0.04em",
-              color: "rgba(201,162,39,0.7)",
             }}
           >
             {hijriDate}
-          </span>
-          <span
-            lang="ar"
-            dir="rtl"
-            style={{
-              fontFamily: "'Amiri', serif",
-              fontSize: "16px",
-              color: "rgba(201,162,39,0.7)",
-              direction: "rtl",
-            }}
-          >
-            تطهير القرآن
           </span>
         </div>
       </header>
