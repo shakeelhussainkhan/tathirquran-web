@@ -3,6 +3,7 @@ import HomeInteractive from "@/app/HomeInteractive";
 import { formatReadableDate, gregorianToHijriString } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function HomePage() {
   const [data, languages, occasion] = await Promise.all([

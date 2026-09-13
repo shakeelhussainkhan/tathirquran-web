@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getTodayAyahData } from "@/lib/queries";
 
-export const revalidate = 3600; // 1 hour ISR
+export const revalidate = 0;
 
 export async function GET() {
   try {
@@ -16,7 +16,7 @@ export async function GET() {
 
     return NextResponse.json(data, {
       headers: {
-        "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
         "Content-Type": "application/json",
       },
     });
