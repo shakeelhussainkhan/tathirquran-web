@@ -6,6 +6,7 @@ import TranslationSelector from "@/components/TranslationSelector";
 import ShareButton from "@/components/ShareButton";
 import TafsirPanel from "@/components/TafsirPanel";
 import AudioPlayer from "@/components/AudioPlayer";
+import NotifySignup from "@/components/NotifySignup";
 import type { Language, TodayAyahResponse, Translation, Tafsir } from "@/types";
 
 interface HomeInteractiveProps {
@@ -328,25 +329,46 @@ export default function HomeInteractive({
 
         {/* Bottom row */}
         <div className="w4-bottom-row">
-          <div style={{ display: "flex", gap: "8px" }}>
-            <a
-              href="#"
-              className="w4-dl-btn"
-              tabIndex={-1}
-              onClick={(e) => e.preventDefault()}
-              style={{ opacity: 0.6, cursor: "not-allowed" }}
-            >
-              iOS — Soon
-            </a>
-            <a
-              href="#"
-              className="w4-dl-btn"
-              tabIndex={-1}
-              onClick={(e) => e.preventDefault()}
-              style={{ opacity: 0.6, cursor: "not-allowed" }}
-            >
-              Android — Soon
-            </a>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "6px" }}>
+            <div style={{ display: "flex", gap: "8px" }}>
+              <a
+                href="https://apps.apple.com/app/tathirquran/id6811745113"
+                style={{ textDecoration: "none" }}
+              >
+                <div style={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "9px",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  color: "rgba(201,162,39,0.55)",
+                  border: "0.5px solid rgba(201,162,39,0.25)",
+                  padding: "5px 14px",
+                  borderRadius: "2px",
+                  display: "inline-block",
+                }}>
+                  ⬡ App Store — Coming Soon
+                </div>
+              </a>
+              <a
+                href="https://play.google.com/store/apps/details?id=com.fivesllc.tathirquran"
+                style={{ textDecoration: "none" }}
+              >
+                <div style={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "9px",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  color: "rgba(201,162,39,0.55)",
+                  border: "0.5px solid rgba(201,162,39,0.25)",
+                  padding: "5px 14px",
+                  borderRadius: "2px",
+                  display: "inline-block",
+                }}>
+                  ⬡ Google Play — Coming Soon
+                </div>
+              </a>
+            </div>
+            <NotifySignup />
           </div>
           <div className="w4-links">
             <Link href="/archive" className="w4-link">
