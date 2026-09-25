@@ -543,7 +543,7 @@ export default function AboutPage() {
               "iOS App with native lock screen widget",
               "Android App with home screen widget",
               "More languages (Turkish, French, Spanish, Indonesian, and more)",
-              "Tafsir from Al-Mizan (Allamah Tabataba'i)",
+              "Daily reflections (scholarly review in progress)",
               "Audio recitation by Shia qaris",
             ].map((item, i) => (
               <li

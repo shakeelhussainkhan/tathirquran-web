@@ -3,7 +3,14 @@
 import { useState } from "react";
 import type { Tafsir } from "@/types";
 
-const SCHOLAR_CONFIG: Record<string, { label: string; sublabel: string }> = {
+const SCHOLAR_CONFIG: Record<string, { label: string; sublabel?: string; note?: string; hideSourceBook?: boolean }> = {
+  // ── Current live key ──────────────────────────────────────────────────────
+  "Reflection": {
+    label: "Reflection — pending scholarly review",
+    hideSourceBook: true,
+    note: "Written by the TathirQuran team to aid reflection. Not a quotation from any tafsir. Under review by scholars.",
+  },
+  // ── Future verified content (kept for when content is available) ──────────
   "Allamah Tabataba'i": {
     label: "Al-Mizan",
     sublabel: "Allamah Tabataba'i (RA)",
@@ -19,6 +26,7 @@ const SCHOLAR_CONFIG: Record<string, { label: string; sublabel: string }> = {
 };
 
 const SCHOLAR_ORDER = [
+  "Reflection",
   "Allamah Tabataba'i",
   "Ahlul Bayt (AS)",
   "Ayatollah Makarem Shirazi",
@@ -111,6 +119,21 @@ export default function TafsirPanel({ tafsirEntries }: TafsirPanelProps) {
                   borderRadius: "0 2px 2px 0",
                 }}
               >
+                {config?.note && (
+                  <p
+                    style={{
+                      fontFamily: "Inter, sans-serif",
+                      fontSize: 11,
+                      color: "#8b6520",
+                      fontStyle: "italic",
+                      lineHeight: 1.5,
+                      marginBottom: 12,
+                      marginTop: 0,
+                    }}
+                  >
+                    {config.note}
+                  </p>
+                )}
                 {entries.map((entry, i) => (
                   <div key={entry.id}>
                     <p
@@ -125,18 +148,23 @@ export default function TafsirPanel({ tafsirEntries }: TafsirPanelProps) {
                     >
                       {entry.text}
                     </p>
-                    <p
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                        fontSize: 10,
-                        color: "#9a7830",
-                        letterSpacing: "0.06em",
-                        marginTop: 10,
-                        marginBottom: i < entries.length - 1 ? 16 : 0,
-                      }}
-                    >
-                      — {entry.source_book}
-                    </p>
+                    {!config?.hideSourceBook && (
+                      <p
+                        style={{
+                          fontFamily: "'Inter', sans-serif",
+                          fontSize: 10,
+                          color: "#9a7830",
+                          letterSpacing: "0.06em",
+                          marginTop: 10,
+                          marginBottom: i < entries.length - 1 ? 16 : 0,
+                        }}
+                      >
+                        — {entry.source_book}
+                      </p>
+                    )}
+                    {config?.hideSourceBook && i < entries.length - 1 && (
+                      <div style={{ marginBottom: 16 }} />
+                    )}
                   </div>
                 ))}
               </div>
