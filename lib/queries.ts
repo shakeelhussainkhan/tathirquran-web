@@ -12,6 +12,7 @@ import type {
   PermissionRequest,
   SearchResponse,
   SearchResult,
+  DevotionalText,
 } from "@/types";
 import { gregorianToHijriString, todayUTC } from "@/lib/utils";
 
@@ -552,5 +553,53 @@ export async function searchAyahs(
     total_results,
     total_pages,
     results,
+  };
+}
+
+// ---------- Devotionals (occasion duas & ziyarat) ----------
+// All devotional reads are best-effort: if migration 012 has not been run
+// yet (table missing) or the seed is empty, they return null / empty lists
+// and NO devotional cards are shown anywhere. No placeholder content.
+
+export async function getDevotionalBySlug(slug: string): Promise<DevotionalText | null> {
+  const { data, error } = await supabase
+    .from("devotional_texts")
+    .select("*")
+    .eq("slug", slug)
+    .limit(1);
+  if (error) return null;
+  return (data?.[0] as DevotionalText) ?? null;
+}
+
+export async function getDevotionalByOccasionTag(
+  occasionTag: string
+): Promise<DevotionalText | null> {
+  const { data, error } = await supabase
+    .from("devotional_texts")
+    .select("*")
+    .eq("occasion_tag", occasionTag)
+    .order("id")
+    .limit(1);
+  if (error) return null;
+  return (data?.[0] as DevotionalText) ?? null;
+}
+
+/**
+ * The devotionals the home page may surface today: the one paired with
+ * today's Islamic occasion (if a row exists), plus Dua Kumayl (slug
+ * 'dua-kumayl', if seeded) — the client component applies the
+ * Thursday-evening rule before showing the Kumayl card.
+ */
+export async function getHomeDevotionals(
+  occasion: string | null
+): Promise<{ occasionDevotional: DevotionalText | null; kumayl: DevotionalText | null }> {
+  const [occasionDevotional, kumayl] = await Promise.all([
+    occasion ? getDevotionalByOccasionTag(occasion) : Promise.resolve(null),
+    getDevotionalBySlug("dua-kumayl"),
+  ]);
+  // If today's occasion devotional IS Dua Kumayl, don't surface it twice.
+  return {
+    occasionDevotional,
+    kumayl: kumayl && kumayl.slug !== occasionDevotional?.slug ? kumayl : null,
   };
 }
