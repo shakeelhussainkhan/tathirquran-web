@@ -4,6 +4,7 @@ import { getAyahPageData } from "@/lib/queries";
 import { verseRef } from "@/lib/utils";
 import ShareButton from "@/components/ShareButton";
 import ShareImageButton from "@/components/ShareImageButton";
+import WordByWord from "@/components/WordByWord";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -53,7 +54,7 @@ export default async function AyahPage({ params }: Props) {
   const data = await getAyahPageData(surahNum, ayahNum);
   if (!data) notFound();
 
-  const { ayah: ayahData, surah: surahData, translations, tafsir } = data;
+  const { ayah: ayahData, surah: surahData, translations, tafsir, words } = data;
   const ref = verseRef(surahData.name_transliterated, surahNum, ayahNum);
 
   const enTranslation = translations.find(
@@ -174,22 +175,11 @@ export default async function AyahPage({ params }: Props) {
             : ""}
         </p>
 
-        {/* Arabic verse */}
-        <p
-          style={{
-            fontFamily: "'Amiri', serif",
-            fontSize: "38px",
-            color: "#0d0a04",
-            direction: "rtl",
-            textAlign: "right",
-            lineHeight: 1.8,
-            marginBottom: "24px",
-          }}
-          lang="ar"
-          dir="rtl"
-        >
-          {ayahData.arabic_uthmani}
-        </p>
+        {/* Arabic verse — WordByWord renders this paragraph itself and adds
+            the (default-off) word-by-word toggle/panel/strip only when
+            ayah_words rows exist for this ayah; otherwise it is exactly the
+            plain paragraph that was here before. */}
+        <WordByWord arabicText={ayahData.arabic_uthmani} words={words} />
 
         {/* Ornament */}
         <div
