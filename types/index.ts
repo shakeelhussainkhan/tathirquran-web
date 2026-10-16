@@ -81,6 +81,15 @@ export interface Tafsir {
   source_book: string | null;
   volume: string | null;
   created_at: string;
+  /**
+   * Human review state (migration 013). Optional on purpose: until that
+   * migration runs, production rows have no review_status at all, and a
+   * missing/undefined value MUST be treated as 'pending' — the reflection
+   * keeps its "pending scholarly review" label.
+   */
+  review_status?: string | null;
+  reviewed_by?: string | null;
+  reviewed_at?: string | null;
 }
 
 export interface IslamicCalendarTag {
