@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getAyahPageData } from "@/lib/queries";
 import { verseRef } from "@/lib/utils";
 import ShareButton from "@/components/ShareButton";
+import NoteTags from "@/components/NoteTags";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -366,6 +367,9 @@ export default async function AyahPage({ params }: Props) {
             ))}
           </section>
         )}
+
+        {/* Personal note & tags (stored in this browser only) */}
+        <NoteTags surahNumber={surahNum} ayahNumber={ayahNum} />
 
         {/* Navigation */}
         <nav
