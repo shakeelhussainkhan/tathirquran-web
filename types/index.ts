@@ -56,6 +56,22 @@ export interface AyahTranslation {
   verified_at: string | null;
 }
 
+/**
+ * One row of ayah_words: a LEXICAL gloss (dictionary meaning) of a single
+ * Arabic word, plus its transliteration. Loaded from Quran.com API v4 word
+ * data by scripts/load_ayah_words.js. This is NOT tafsir/commentary and NOT
+ * a verse translation — see the framing note in
+ * supabase/migrations/011_ayah_words.sql.
+ */
+export interface AyahWord {
+  id: number;
+  ayah_id: number;
+  position: number;
+  arabic_text: string;
+  translation_en: string | null;
+  transliteration: string | null;
+}
+
 export interface Tafsir {
   id: number;
   ayah_id: number;
@@ -65,6 +81,15 @@ export interface Tafsir {
   source_book: string | null;
   volume: string | null;
   created_at: string;
+  /**
+   * Human review state (migration 013). Optional on purpose: until that
+   * migration runs, production rows have no review_status at all, and a
+   * missing/undefined value MUST be treated as 'pending' — the reflection
+   * keeps its "pending scholarly review" label.
+   */
+  review_status?: string | null;
+  reviewed_by?: string | null;
+  reviewed_at?: string | null;
 }
 
 export interface IslamicCalendarTag {
@@ -117,6 +142,8 @@ export interface AyahPageData {
   surah: Surah;
   translations: (AyahTranslation & { translation: Translation })[];
   tafsir: Tafsir[];
+  /** Word-by-word lexical glosses; empty until migration 011 + the loader have been run. */
+  words: AyahWord[];
 }
 
 export interface HijriDate {
@@ -124,4 +151,59 @@ export interface HijriDate {
   month: number;
   day: number;
   monthName: string;
+}
+
+// ---------- Search ----------
+
+/** One matched translation snippet for a search result. */
+export interface SearchMatch {
+  text: string;
+  scholar_name: string;
+  language_code: string;
+}
+
+export interface SearchResult {
+  ayah_id: number;
+  surah_number: number;
+  ayah_number: number;
+  surah_name_english: string;
+  surah_name_transliterated: string;
+  surah_name_arabic: string;
+  arabic_uthmani: string;
+  /** Which fields the query matched: the Arabic text on the ayah, and/or a translation. */
+  matched_in: ("arabic" | "translation")[];
+  /** Translation rows whose text matched the query (up to 3). */
+  matches: SearchMatch[];
+  /** Display translation: the first matched translation, else the default English one. */
+  translation_text: string | null;
+  translation_scholar: string | null;
+  translation_language_code: string | null;
+}
+
+export interface SearchResponse {
+  query: string;
+  page: number;
+  page_size: number;
+  total_results: number;
+  total_pages: number;
+  results: SearchResult[];
+}
+
+// ---------- Devotionals (occasion duas & ziyarat) ----------
+
+/**
+ * A devotional text row (migration 012). Content is VERBATIM from a Shia
+ * (Ithna Ashari) source, cited in source_note — never AI-written, never an
+ * invented translation. translation_text is null until a verified
+ * translation is supplied.
+ */
+export interface DevotionalText {
+  id: number;
+  slug: string;
+  title: string;
+  /** Matches islamic_calendar_tags.occasion, or null if not occasion-bound. */
+  occasion_tag: string | null;
+  arabic_text: string;
+  translation_text: string | null;
+  source_note: string;
 }

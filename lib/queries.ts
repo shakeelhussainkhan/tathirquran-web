@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import type {
   Ayah,
+  AyahWord,
   Surah,
   Translation,
   AyahTranslation,
@@ -10,6 +11,9 @@ import type {
   AyahPageData,
   DailySchedule,
   PermissionRequest,
+  SearchResponse,
+  SearchResult,
+  DevotionalText,
 } from "@/types";
 import { gregorianToHijriString, todayUTC } from "@/lib/utils";
 
@@ -172,6 +176,29 @@ export async function getAllTranslationsForAyah(
   return data as (AyahTranslation & { translation: Translation })[];
 }
 
+// ---------- Word-by-word (lexical glosses) ----------
+
+/**
+ * Word-by-word LEXICAL glosses for one ayah, in word order. These are
+ * dictionary meanings of individual Arabic words (Quran.com API v4 word
+ * data, loaded by scripts/load_ayah_words.js) — NOT tafsir/commentary and
+ * NOT a verse translation.
+ *
+ * Returns [] whenever no rows exist — including before migration 011 has
+ * been run (the query errors because the table does not exist yet). Callers
+ * hide the word-by-word UI entirely on an empty result; this query must
+ * never throw and break the ayah page.
+ */
+export async function getAyahWords(ayahId: number): Promise<AyahWord[]> {
+  const { data, error } = await supabase
+    .from("ayah_words")
+    .select("*")
+    .eq("ayah_id", ayahId)
+    .order("position");
+  if (error) return [];
+  return (data as AyahWord[]) ?? [];
+}
+
 // ---------- Tafsir ----------
 
 export async function getTafsirForAyah(
@@ -283,16 +310,17 @@ export async function getAyahPageData(
   const surah = await getSurah(surahNum);
   if (!surah) return null;
 
-  const [translations, tafsir] = await Promise.all([
+  const [translations, tafsir, words] = await Promise.all([
     getAllTranslationsForAyah(ayah.ayah_id),
     supabase
       .from("tafsir")
       .select("*")
       .eq("ayah_id", ayah.ayah_id)
       .then(({ data }) => (data as Tafsir[]) ?? []),
+    getAyahWords(ayah.ayah_id),
   ]);
 
-  return { ayah, surah, translations, tafsir };
+  return { ayah, surah, translations, tafsir, words };
 }
 
 // ---------- Islamic Calendar ----------
@@ -327,4 +355,276 @@ export async function getPermissionRequests(): Promise<PermissionRequest[]> {
     .order("created_at", { ascending: false });
   if (error) throw error;
   return data as PermissionRequest[];
+}
+
+// ---------- Search ----------
+
+export const SEARCH_PAGE_SIZE = 20;
+
+/** Supabase/PostgREST returns at most 1,000 rows per request — scan in batches of this size. */
+const SEARCH_SCAN_BATCH = 1000;
+
+/** Escape LIKE/ILIKE wildcards so user input is matched literally. */
+function escapeIlike(term: string): string {
+  return term.replace(/[%_\\]/g, "\\$&");
+}
+
+interface IdRow {
+  ayah_id: number;
+}
+
+type IdBatchResult = PromiseLike<{
+  data: IdRow[] | null;
+  count: number | null;
+  error: { message: string } | null;
+}>;
+
+/**
+ * Collects every distinct ayah_id produced by a paginated id query.
+ * `makeQuery` must build a FRESH query for each batch (Supabase builders are
+ * single-use) and apply .order() + .range(from, to). The first call must also
+ * request an exact count so the remaining batches can be fetched in parallel.
+ */
+async function collectMatchingAyahIds(
+  makeQuery: (from: number, to: number, withCount: boolean) => IdBatchResult
+): Promise<Set<number>> {
+  const ids = new Set<number>();
+
+  const first = await makeQuery(0, SEARCH_SCAN_BATCH - 1, true);
+  if (first.error) throw new Error(first.error.message);
+  (first.data ?? []).forEach((r) => ids.add(r.ayah_id));
+
+  const total = first.count ?? ids.size;
+  if (total > SEARCH_SCAN_BATCH) {
+    const batches: IdBatchResult[] = [];
+    for (let from = SEARCH_SCAN_BATCH; from < total; from += SEARCH_SCAN_BATCH) {
+      batches.push(makeQuery(from, from + SEARCH_SCAN_BATCH - 1, false));
+    }
+    const rest = await Promise.all(batches);
+    for (const batch of rest) {
+      if (batch.error) throw new Error(batch.error.message);
+      (batch.data ?? []).forEach((r) => ids.add(r.ayah_id));
+    }
+  }
+
+  return ids;
+}
+
+/**
+ * Full-text search across every translation (ayah_translations.text) plus the
+ * Arabic Uthmani text on ayahs. One result per ayah,
+ * ordered by Quran order (ayah_id follows surah/ayah order in the seed),
+ * paginated at SEARCH_PAGE_SIZE with an exact total.
+ */
+export async function searchAyahs(
+  rawQuery: string,
+  page = 1
+): Promise<SearchResponse> {
+  const query = rawQuery.trim();
+  const safePage = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
+  const pattern = `%${escapeIlike(query)}%`;
+
+  const [translationIds, arabicIds] = await Promise.all([
+    collectMatchingAyahIds(
+      (from, to, withCount) =>
+        supabase
+          .from("ayah_translations")
+          .select("ayah_id", withCount ? { count: "exact" } : undefined)
+          .ilike("text", pattern)
+          .order("ayah_id")
+          .order("id")
+          .range(from, to) as unknown as IdBatchResult
+    ),
+    collectMatchingAyahIds(
+      (from, to, withCount) =>
+        supabase
+          .from("ayahs")
+          .select("ayah_id", withCount ? { count: "exact" } : undefined)
+          .ilike("arabic_uthmani", pattern)
+          .order("ayah_id")
+          .range(from, to) as unknown as IdBatchResult
+    ),
+  ]);
+
+  const allIds = new Set<number>([...translationIds, ...arabicIds]);
+  const sortedIds = [...allIds].sort((a, b) => a - b);
+
+  const total_results = sortedIds.length;
+  const total_pages = Math.max(1, Math.ceil(total_results / SEARCH_PAGE_SIZE));
+  const pageIds = sortedIds.slice(
+    (safePage - 1) * SEARCH_PAGE_SIZE,
+    safePage * SEARCH_PAGE_SIZE
+  );
+
+  if (pageIds.length === 0) {
+    return {
+      query,
+      page: safePage,
+      page_size: SEARCH_PAGE_SIZE,
+      total_results,
+      total_pages,
+      results: [],
+    };
+  }
+
+  // Details for just this page of ayahs.
+  const { data: ayahRows, error: ayahError } = await supabase
+    .from("ayahs")
+    .select("*")
+    .in("ayah_id", pageIds);
+  if (ayahError) throw ayahError;
+  const ayahs = (ayahRows as Ayah[]) ?? [];
+
+  const surahNumbers = [...new Set(ayahs.map((a) => a.surah_number))];
+  const { data: surahRows } = await supabase
+    .from("surahs")
+    .select("*")
+    .in("surah_number", surahNumbers);
+  const surahByNumber = new Map<number, Surah>(
+    ((surahRows as Surah[]) ?? []).map((s) => [s.surah_number, s])
+  );
+
+  // Translation rows on this page whose text actually matched.
+  const { data: matchRows } = await supabase
+    .from("ayah_translations")
+    .select("*, translation:translations(*)")
+    .in("ayah_id", pageIds)
+    .ilike("text", pattern)
+    .order("ayah_id");
+  const matchesByAyah = new Map<
+    number,
+    (AyahTranslation & { translation: Translation })[]
+  >();
+  for (const row of (matchRows as (AyahTranslation & {
+    translation: Translation;
+  })[]) ?? []) {
+    const list = matchesByAyah.get(row.ayah_id) ?? [];
+    if (list.length < 3) list.push(row);
+    matchesByAyah.set(row.ayah_id, list);
+  }
+
+  // Fallback display translation (default English) for ayahs that matched
+  // only in Arabic, so every result has readable context.
+  const needsFallback = pageIds.filter((id) => !matchesByAyah.has(id));
+  const fallbackByAyah = new Map<number, AyahTranslation>();
+  let defaultTranslationMeta: Translation | null = null;
+  if (needsFallback.length > 0) {
+    defaultTranslationMeta = await getDefaultTranslation("en");
+    if (defaultTranslationMeta) {
+      const { data: fallbackRows } = await supabase
+        .from("ayah_translations")
+        .select("*")
+        .in("ayah_id", needsFallback)
+        .eq("translation_id", defaultTranslationMeta.translation_id);
+      for (const row of (fallbackRows as AyahTranslation[]) ?? []) {
+        fallbackByAyah.set(row.ayah_id, row);
+      }
+    }
+  }
+
+  const ayahById = new Map<number, Ayah>(ayahs.map((a) => [a.ayah_id, a]));
+
+  const results: SearchResult[] = pageIds
+    .map((id) => {
+      const ayah = ayahById.get(id);
+      if (!ayah) return null;
+      const surah = surahByNumber.get(ayah.surah_number);
+      const matches = matchesByAyah.get(id) ?? [];
+      const fallback = fallbackByAyah.get(id);
+
+      const matched_in: SearchResult["matched_in"] = [];
+      if (arabicIds.has(id)) matched_in.push("arabic");
+      if (translationIds.has(id)) matched_in.push("translation");
+
+      const firstMatch = matches[0];
+      const result: SearchResult = {
+        ayah_id: ayah.ayah_id,
+        surah_number: ayah.surah_number,
+        ayah_number: ayah.ayah_number,
+        surah_name_english: surah?.name_english ?? "",
+        surah_name_transliterated: surah?.name_transliterated ?? "",
+        surah_name_arabic: surah?.name_arabic ?? "",
+        arabic_uthmani: ayah.arabic_uthmani,
+        matched_in,
+        matches: matches.map((m) => ({
+          text: m.text,
+          scholar_name: m.translation?.scholar_name ?? "",
+          language_code: m.translation?.language_code ?? "",
+        })),
+        translation_text: firstMatch
+          ? firstMatch.text
+          : fallback
+            ? fallback.text
+            : null,
+        translation_scholar: firstMatch
+          ? (firstMatch.translation?.scholar_name ?? null)
+          : fallback
+            ? (defaultTranslationMeta?.scholar_name ?? null)
+            : null,
+        translation_language_code: firstMatch
+          ? (firstMatch.translation?.language_code ?? null)
+          : fallback
+            ? (defaultTranslationMeta?.language_code ?? null)
+            : null,
+      };
+      return result;
+    })
+    .filter((r): r is SearchResult => r !== null);
+
+  return {
+    query,
+    page: safePage,
+    page_size: SEARCH_PAGE_SIZE,
+    total_results,
+    total_pages,
+    results,
+  };
+}
+
+// ---------- Devotionals (occasion duas & ziyarat) ----------
+// All devotional reads are best-effort: if migration 012 has not been run
+// yet (table missing) or the seed is empty, they return null / empty lists
+// and NO devotional cards are shown anywhere. No placeholder content.
+
+export async function getDevotionalBySlug(slug: string): Promise<DevotionalText | null> {
+  const { data, error } = await supabase
+    .from("devotional_texts")
+    .select("*")
+    .eq("slug", slug)
+    .limit(1);
+  if (error) return null;
+  return (data?.[0] as DevotionalText) ?? null;
+}
+
+export async function getDevotionalByOccasionTag(
+  occasionTag: string
+): Promise<DevotionalText | null> {
+  const { data, error } = await supabase
+    .from("devotional_texts")
+    .select("*")
+    .eq("occasion_tag", occasionTag)
+    .order("id")
+    .limit(1);
+  if (error) return null;
+  return (data?.[0] as DevotionalText) ?? null;
+}
+
+/**
+ * The devotionals the home page may surface today: the one paired with
+ * today's Islamic occasion (if a row exists), plus Dua Kumayl (slug
+ * 'dua-kumayl', if seeded) — the client component applies the
+ * Thursday-evening rule before showing the Kumayl card.
+ */
+export async function getHomeDevotionals(
+  occasion: string | null
+): Promise<{ occasionDevotional: DevotionalText | null; kumayl: DevotionalText | null }> {
+  const [occasionDevotional, kumayl] = await Promise.all([
+    occasion ? getDevotionalByOccasionTag(occasion) : Promise.resolve(null),
+    getDevotionalBySlug("dua-kumayl"),
+  ]);
+  // If today's occasion devotional IS Dua Kumayl, don't surface it twice.
+  return {
+    occasionDevotional,
+    kumayl: kumayl && kumayl.slug !== occasionDevotional?.slug ? kumayl : null,
+  };
 }

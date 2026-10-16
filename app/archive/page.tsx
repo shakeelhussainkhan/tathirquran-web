@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getRecentSchedule, getAyahById, getSurah } from "@/lib/queries";
 import { formatReadableDate, gregorianToHijriString } from "@/lib/utils";
 import type { Metadata } from "next";
+import MyNotesList from "@/components/MyNotesList";
 
 export const metadata: Metadata = {
   title: "Archive — TathirQuran",
@@ -270,6 +271,9 @@ export default async function ArchivePage() {
             ayahs are scheduled.
           </p>
         )}
+
+        {/* My Notes — personal notes stored in this browser only */}
+        <MyNotesList />
       </div>
 
       {/* BOTTOM GOLD BAR */}

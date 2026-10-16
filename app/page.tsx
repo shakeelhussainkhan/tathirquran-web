@@ -1,4 +1,4 @@
-import { getTodayAyahData, getLiveLanguages, getTodayIslamicOccasion } from "@/lib/queries";
+import { getTodayAyahData, getLiveLanguages, getTodayIslamicOccasion, getHomeDevotionals } from "@/lib/queries";
 import HomeInteractive from "@/app/HomeInteractive";
 import { formatReadableDate, gregorianToHijriString } from "@/lib/utils";
 
@@ -11,6 +11,9 @@ export default async function HomePage() {
     getLiveLanguages(),
     getTodayIslamicOccasion(),
   ]);
+  // Devotionals are best-effort: empty seed (or migration 012 not yet run)
+  // returns nulls and no cards are shown — never placeholder content.
+  const devotionals = await getHomeDevotionals(occasion?.occasion ?? null);
 
   if (!data) {
     return (
@@ -125,7 +128,7 @@ export default async function HomePage() {
       </header>
 
       {/* HERO + CONTROLS — HomeInteractive owns everything reactive */}
-      <HomeInteractive initialData={data} languages={languages} occasion={occasion} />
+      <HomeInteractive initialData={data} languages={languages} occasion={occasion} devotionals={devotionals} />
 
       {/* BOTTOM GOLD BAR */}
       <div className="w4-gold-bar" />
