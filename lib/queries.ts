@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import type {
   Ayah,
+  AyahWord,
   Surah,
   Translation,
   AyahTranslation,
@@ -174,6 +175,29 @@ export async function getAllTranslationsForAyah(
   return data as (AyahTranslation & { translation: Translation })[];
 }
 
+// ---------- Word-by-word (lexical glosses) ----------
+
+/**
+ * Word-by-word LEXICAL glosses for one ayah, in word order. These are
+ * dictionary meanings of individual Arabic words (Quran.com API v4 word
+ * data, loaded by scripts/load_ayah_words.js) — NOT tafsir/commentary and
+ * NOT a verse translation.
+ *
+ * Returns [] whenever no rows exist — including before migration 011 has
+ * been run (the query errors because the table does not exist yet). Callers
+ * hide the word-by-word UI entirely on an empty result; this query must
+ * never throw and break the ayah page.
+ */
+export async function getAyahWords(ayahId: number): Promise<AyahWord[]> {
+  const { data, error } = await supabase
+    .from("ayah_words")
+    .select("*")
+    .eq("ayah_id", ayahId)
+    .order("position");
+  if (error) return [];
+  return (data as AyahWord[]) ?? [];
+}
+
 // ---------- Tafsir ----------
 
 export async function getTafsirForAyah(
@@ -285,16 +309,17 @@ export async function getAyahPageData(
   const surah = await getSurah(surahNum);
   if (!surah) return null;
 
-  const [translations, tafsir] = await Promise.all([
+  const [translations, tafsir, words] = await Promise.all([
     getAllTranslationsForAyah(ayah.ayah_id),
     supabase
       .from("tafsir")
       .select("*")
       .eq("ayah_id", ayah.ayah_id)
       .then(({ data }) => (data as Tafsir[]) ?? []),
+    getAyahWords(ayah.ayah_id),
   ]);
 
-  return { ayah, surah, translations, tafsir };
+  return { ayah, surah, translations, tafsir, words };
 }
 
 // ---------- Islamic Calendar ----------

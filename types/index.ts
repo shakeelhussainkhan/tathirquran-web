@@ -56,6 +56,22 @@ export interface AyahTranslation {
   verified_at: string | null;
 }
 
+/**
+ * One row of ayah_words: a LEXICAL gloss (dictionary meaning) of a single
+ * Arabic word, plus its transliteration. Loaded from Quran.com API v4 word
+ * data by scripts/load_ayah_words.js. This is NOT tafsir/commentary and NOT
+ * a verse translation — see the framing note in
+ * supabase/migrations/011_ayah_words.sql.
+ */
+export interface AyahWord {
+  id: number;
+  ayah_id: number;
+  position: number;
+  arabic_text: string;
+  translation_en: string | null;
+  transliteration: string | null;
+}
+
 export interface Tafsir {
   id: number;
   ayah_id: number;
@@ -117,6 +133,8 @@ export interface AyahPageData {
   surah: Surah;
   translations: (AyahTranslation & { translation: Translation })[];
   tafsir: Tafsir[];
+  /** Word-by-word lexical glosses; empty until migration 011 + the loader have been run. */
+  words: AyahWord[];
 }
 
 export interface HijriDate {
