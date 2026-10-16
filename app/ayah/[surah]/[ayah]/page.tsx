@@ -3,8 +3,8 @@ import Link from "next/link";
 import { getAyahPageData } from "@/lib/queries";
 import { verseRef } from "@/lib/utils";
 import ShareButton from "@/components/ShareButton";
-import Transliteration from "@/components/Transliteration";
 import ShareImageButton from "@/components/ShareImageButton";
+import Transliteration from "@/components/Transliteration";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
