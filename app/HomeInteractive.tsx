@@ -4,21 +4,28 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import TranslationSelector from "@/components/TranslationSelector";
 import ShareButton from "@/components/ShareButton";
+import ShareImageButton from "@/components/ShareImageButton";
 import TafsirPanel from "@/components/TafsirPanel";
 import AudioPlayer from "@/components/AudioPlayer";
 import NotifySignup from "@/components/NotifySignup";
-import type { Language, TodayAyahResponse, Translation, Tafsir } from "@/types";
+import type { Language, TodayAyahResponse, Translation, Tafsir, DevotionalText } from "@/types";
+import DevotionalsToday from "@/components/DevotionalsToday";
 
 interface HomeInteractiveProps {
   initialData: TodayAyahResponse;
   languages: Language[];
   occasion?: { occasion: string; priority: number; ayah_id: number } | null;
+  devotionals?: {
+    occasionDevotional: DevotionalText | null;
+    kumayl: DevotionalText | null;
+  } | null;
 }
 
 export default function HomeInteractive({
   initialData,
   languages,
   occasion,
+  devotionals,
 }: HomeInteractiveProps) {
   const [activeLanguage, setActiveLanguage] = useState("en");
   const [translations, setTranslations] = useState<Translation[]>([]);
@@ -132,6 +139,12 @@ export default function HomeInteractive({
           ☪ {occasion.occasion}
         </div>
       )}
+
+      {/* Devotional cards — only when a matching devotional_texts row exists */}
+      <DevotionalsToday
+        occasionDevotional={devotionals?.occasionDevotional ?? null}
+        kumayl={devotionals?.kumayl ?? null}
+      />
 
       {/* HERO — verse centred on parchment */}
       <section className="w4-hero">
@@ -371,6 +384,9 @@ export default function HomeInteractive({
             <NotifySignup />
           </div>
           <div className="w4-links">
+            <Link href="/search" className="w4-link">
+              Search
+            </Link>
             <Link href="/archive" className="w4-link">
               Archive
             </Link>
@@ -383,6 +399,10 @@ export default function HomeInteractive({
             <Link href="/terms" className="w4-link">
               Terms
             </Link>
+            <ShareImageButton
+              surahNumber={ayah.surah_number}
+              ayahNumber={ayah.ayah_number}
+            />
             <ShareButton
               surahNumber={ayah.surah_number}
               ayahNumber={ayah.ayah_number}
