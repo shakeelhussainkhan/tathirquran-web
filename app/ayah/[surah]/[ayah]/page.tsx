@@ -4,6 +4,7 @@ import { getAyahPageData } from "@/lib/queries";
 import { verseRef } from "@/lib/utils";
 import ShareButton from "@/components/ShareButton";
 import ShareImageButton from "@/components/ShareImageButton";
+import NoteTags from "@/components/NoteTags";
 import WordByWord from "@/components/WordByWord";
 import type { Metadata } from "next";
 
@@ -370,6 +371,9 @@ export default async function AyahPage({ params }: Props) {
             })}
           </section>
         )}
+
+        {/* Personal note & tags (stored in this browser only) */}
+        <NoteTags surahNumber={surahNum} ayahNumber={ayahNum} />
 
         {/* Navigation */}
         <nav
