@@ -161,3 +161,22 @@ export interface SearchResponse {
   total_pages: number;
   results: SearchResult[];
 }
+
+// ---------- Devotionals (occasion duas & ziyarat) ----------
+
+/**
+ * A devotional text row (migration 012). Content is VERBATIM from a Shia
+ * (Ithna Ashari) source, cited in source_note — never AI-written, never an
+ * invented translation. translation_text is null until a verified
+ * translation is supplied.
+ */
+export interface DevotionalText {
+  id: number;
+  slug: string;
+  title: string;
+  /** Matches islamic_calendar_tags.occasion, or null if not occasion-bound. */
+  occasion_tag: string | null;
+  arabic_text: string;
+  translation_text: string | null;
+  source_note: string;
+}
