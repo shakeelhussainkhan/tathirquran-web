@@ -9,18 +9,24 @@ import Transliteration from "@/components/Transliteration";
 import TafsirPanel from "@/components/TafsirPanel";
 import AudioPlayer from "@/components/AudioPlayer";
 import NotifySignup from "@/components/NotifySignup";
-import type { Language, TodayAyahResponse, Translation, Tafsir } from "@/types";
+import type { Language, TodayAyahResponse, Translation, Tafsir, DevotionalText } from "@/types";
+import DevotionalsToday from "@/components/DevotionalsToday";
 
 interface HomeInteractiveProps {
   initialData: TodayAyahResponse;
   languages: Language[];
   occasion?: { occasion: string; priority: number; ayah_id: number } | null;
+  devotionals?: {
+    occasionDevotional: DevotionalText | null;
+    kumayl: DevotionalText | null;
+  } | null;
 }
 
 export default function HomeInteractive({
   initialData,
   languages,
   occasion,
+  devotionals,
 }: HomeInteractiveProps) {
   const [activeLanguage, setActiveLanguage] = useState("en");
   const [translations, setTranslations] = useState<Translation[]>([]);
@@ -134,6 +140,12 @@ export default function HomeInteractive({
           ☪ {occasion.occasion}
         </div>
       )}
+
+      {/* Devotional cards — only when a matching devotional_texts row exists */}
+      <DevotionalsToday
+        occasionDevotional={devotionals?.occasionDevotional ?? null}
+        kumayl={devotionals?.kumayl ?? null}
+      />
 
       {/* HERO — verse centred on parchment */}
       <section className="w4-hero">
