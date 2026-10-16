@@ -5,6 +5,7 @@ import Link from "next/link";
 import TranslationSelector from "@/components/TranslationSelector";
 import ShareButton from "@/components/ShareButton";
 import ShareImageButton from "@/components/ShareImageButton";
+import Transliteration from "@/components/Transliteration";
 import TafsirPanel from "@/components/TafsirPanel";
 import AudioPlayer from "@/components/AudioPlayer";
 import NotifySignup from "@/components/NotifySignup";
@@ -203,6 +204,9 @@ export default function HomeInteractive({
           <p className="w4-arabic" lang="ar" dir="rtl">
             {ayah.arabic_uthmani}
           </p>
+
+          {/* Transliteration (phonetic transcription; hidden when not loaded) */}
+          <Transliteration text={ayah.transliteration} />
 
           {/* Ornament */}
           <div className="w4-ornament" aria-hidden="true">

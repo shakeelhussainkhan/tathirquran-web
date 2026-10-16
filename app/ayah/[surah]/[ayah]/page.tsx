@@ -4,6 +4,7 @@ import { getAyahPageData } from "@/lib/queries";
 import { verseRef } from "@/lib/utils";
 import ShareButton from "@/components/ShareButton";
 import ShareImageButton from "@/components/ShareImageButton";
+import Transliteration from "@/components/Transliteration";
 import NoteTags from "@/components/NoteTags";
 import WordByWord from "@/components/WordByWord";
 import type { Metadata } from "next";
@@ -181,6 +182,9 @@ export default async function AyahPage({ params }: Props) {
             ayah_words rows exist for this ayah; otherwise it is exactly the
             plain paragraph that was here before. */}
         <WordByWord arabicText={ayahData.arabic_uthmani} words={words} />
+
+        {/* Transliteration (phonetic transcription; hidden when not loaded) */}
+        <Transliteration text={ayahData.transliteration} />
 
         {/* Ornament */}
         <div
