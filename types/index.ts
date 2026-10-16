@@ -125,3 +125,39 @@ export interface HijriDate {
   day: number;
   monthName: string;
 }
+
+// ---------- Search ----------
+
+/** One matched translation snippet for a search result. */
+export interface SearchMatch {
+  text: string;
+  scholar_name: string;
+  language_code: string;
+}
+
+export interface SearchResult {
+  ayah_id: number;
+  surah_number: number;
+  ayah_number: number;
+  surah_name_english: string;
+  surah_name_transliterated: string;
+  surah_name_arabic: string;
+  arabic_uthmani: string;
+  /** Which fields the query matched: the Arabic text on the ayah, and/or a translation. */
+  matched_in: ("arabic" | "translation")[];
+  /** Translation rows whose text matched the query (up to 3). */
+  matches: SearchMatch[];
+  /** Display translation: the first matched translation, else the default English one. */
+  translation_text: string | null;
+  translation_scholar: string | null;
+  translation_language_code: string | null;
+}
+
+export interface SearchResponse {
+  query: string;
+  page: number;
+  page_size: number;
+  total_results: number;
+  total_pages: number;
+  results: SearchResult[];
+}
