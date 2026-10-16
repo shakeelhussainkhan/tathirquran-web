@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getAyahPageData } from "@/lib/queries";
 import { verseRef } from "@/lib/utils";
 import ShareButton from "@/components/ShareButton";
+import ShareImageButton from "@/components/ShareImageButton";
 import NoteTags from "@/components/NoteTags";
 import type { Metadata } from "next";
 
@@ -151,7 +152,10 @@ export default async function AyahPage({ params }: Props) {
           >
             ← Today&apos;s Ayah
           </Link>
-          <ShareButton surahNumber={surahNum} ayahNumber={ayahNum} />
+          <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+            <ShareImageButton surahNumber={surahNum} ayahNumber={ayahNum} />
+            <ShareButton surahNumber={surahNum} ayahNumber={ayahNum} />
+          </div>
         </div>
 
         {/* Surah label */}
