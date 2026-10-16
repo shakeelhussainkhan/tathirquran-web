@@ -371,6 +371,9 @@ export default function HomeInteractive({
             <NotifySignup />
           </div>
           <div className="w4-links">
+            <Link href="/search" className="w4-link">
+              Search
+            </Link>
             <Link href="/archive" className="w4-link">
               Archive
             </Link>
