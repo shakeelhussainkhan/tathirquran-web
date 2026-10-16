@@ -5,6 +5,7 @@ import Link from "next/link";
 import TranslationSelector from "@/components/TranslationSelector";
 import ShareButton from "@/components/ShareButton";
 import Transliteration from "@/components/Transliteration";
+import ShareImageButton from "@/components/ShareImageButton";
 import TafsirPanel from "@/components/TafsirPanel";
 import AudioPlayer from "@/components/AudioPlayer";
 import NotifySignup from "@/components/NotifySignup";
@@ -375,6 +376,9 @@ export default function HomeInteractive({
             <NotifySignup />
           </div>
           <div className="w4-links">
+            <Link href="/search" className="w4-link">
+              Search
+            </Link>
             <Link href="/archive" className="w4-link">
               Archive
             </Link>
@@ -387,6 +391,10 @@ export default function HomeInteractive({
             <Link href="/terms" className="w4-link">
               Terms
             </Link>
+            <ShareImageButton
+              surahNumber={ayah.surah_number}
+              ayahNumber={ayah.ayah_number}
+            />
             <ShareButton
               surahNumber={ayah.surah_number}
               ayahNumber={ayah.ayah_number}
