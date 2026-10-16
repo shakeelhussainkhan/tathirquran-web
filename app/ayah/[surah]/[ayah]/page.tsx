@@ -335,7 +335,16 @@ export default async function AyahPage({ params }: Props) {
             >
               Tafsir
             </p>
-            {tafsir.map((t) => (
+            {tafsir.map((t) => {
+              // A human-approved Reflection (migration 013) drops only the
+              // "pending scholarly review" qualifier from its source line;
+              // anything else — including rows with no review_status yet —
+              // keeps the exact current line.
+              const sourceBook =
+                t.scholar === "Reflection" && t.review_status === "approved"
+                  ? (t.source_book?.replace(/ — pending scholarly review$/, "") ?? null)
+                  : t.source_book;
+              return (
               <div
                 key={t.id}
                 style={{
@@ -363,11 +372,12 @@ export default async function AyahPage({ params }: Props) {
                   }}
                 >
                   — {t.scholar}
-                  {t.source_book && `, ${t.source_book}`}
+                  {sourceBook && `, ${sourceBook}`}
                   {t.volume && ` vol. ${t.volume}`}
                 </p>
               </div>
-            ))}
+              );
+            })}
           </section>
         )}
 
