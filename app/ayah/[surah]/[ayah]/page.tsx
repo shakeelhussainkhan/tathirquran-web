@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getAyahPageData } from "@/lib/queries";
 import { verseRef } from "@/lib/utils";
 import ShareButton from "@/components/ShareButton";
+import Transliteration from "@/components/Transliteration";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -186,6 +187,9 @@ export default async function AyahPage({ params }: Props) {
         >
           {ayahData.arabic_uthmani}
         </p>
+
+        {/* Transliteration (phonetic transcription; hidden when not loaded) */}
+        <Transliteration text={ayahData.transliteration} />
 
         {/* Ornament */}
         <div
