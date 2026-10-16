@@ -71,6 +71,15 @@ export default function TafsirPanel({ tafsirEntries }: TafsirPanelProps) {
         const config = SCHOLAR_CONFIG[scholar];
         const entries = grouped[scholar];
         const isOpen = openSections[scholar];
+        // Honest labelling: a Reflection keeps the "pending scholarly
+        // review" label until a human reviewer has approved EVERY entry in
+        // this group (migration 013). A missing review_status — the column
+        // does not exist until the migration runs — counts as pending.
+        const headingLabel =
+          scholar === "Reflection" &&
+          entries.every((e) => e.review_status === "approved")
+            ? "Reflection"
+            : config?.label || scholar;
 
         return (
           <div key={scholar}>
@@ -87,7 +96,7 @@ export default function TafsirPanel({ tafsirEntries }: TafsirPanelProps) {
               }}
             >
               <span>
-                {config?.label || scholar}
+                {headingLabel}
                 {config?.sublabel && (
                   <span
                     style={{
