@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import TranslationSelector from "@/components/TranslationSelector";
 import ShareButton from "@/components/ShareButton";
+import ShareImageButton from "@/components/ShareImageButton";
 import TafsirPanel from "@/components/TafsirPanel";
 import AudioPlayer from "@/components/AudioPlayer";
 import NotifySignup from "@/components/NotifySignup";
@@ -383,6 +384,10 @@ export default function HomeInteractive({
             <Link href="/terms" className="w4-link">
               Terms
             </Link>
+            <ShareImageButton
+              surahNumber={ayah.surah_number}
+              ayahNumber={ayah.ayah_number}
+            />
             <ShareButton
               surahNumber={ayah.surah_number}
               ayahNumber={ayah.ayah_number}
