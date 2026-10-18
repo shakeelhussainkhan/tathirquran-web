@@ -131,12 +131,21 @@ async function main() {
   fs.writeFileSync(backupPath, JSON.stringify(backupRows, null, 2));
   console.log(`✓ Backed up ${backupRows.length} ayahs rows to ${backupPath}`);
 
-  // 2) Match API ayahs to DB ayah_ids by surah/ayah number.
-  const ayahMap = {};
-  backupRows.forEach(a => { ayahMap[`${a.surah_number}:${a.ayah_number}`] = a.ayah_id; });
+  // 2) Match API ayahs to DB rows by surah/ayah number. Rows carried into
+  //    the write are the FULL existing rows with only transliteration
+  //    replaced: a partial-row upsert ({ayah_id, transliteration}) makes
+  //    Postgres form a proposed INSERT row with NULLs for the other
+  //    NOT NULL columns (ayah_number, surah_number, arabic_uthmani...) and
+  //    the NOT NULL check fires BEFORE the ON CONFLICT update path —
+  //    first live run 2026-10-17 failed at batch 0 with exactly that.
+  const rowMap = {};
+  backupRows.forEach(a => { rowMap[`${a.surah_number}:${a.ayah_number}`] = a; });
   const rows = ayahs
-    .map(a => ({ ayah_id: ayahMap[`${a.surah}:${a.ayah}`], transliteration: a.text }))
-    .filter(r => r.ayah_id && r.transliteration);
+    .map(a => {
+      const existing = rowMap[`${a.surah}:${a.ayah}`];
+      return existing ? { ...existing, transliteration: a.text } : null;
+    })
+    .filter(r => r && r.transliteration);
   const unmatched = ayahs.length - rows.length;
   if (unmatched > 0) {
     console.error(`\n${unmatched} API ayahs did not match a DB row — aborting before any write.`);
@@ -145,7 +154,8 @@ async function main() {
   console.log(`✓ Matched ${rows.length}/${ayahs.length} ayahs to DB rows`);
 
   // 3) Batched writes (200/batch, repo convention). Upsert on the ayah_id PK
-  //    updates only the transliteration column for existing rows.
+  //    with full rows (see step 2): for existing rows this changes only the
+  //    transliteration value; every other column is written back unchanged.
   let done = 0;
   for (let i = 0; i < rows.length; i += 200) {
     const batch = rows.slice(i, i + 200);
