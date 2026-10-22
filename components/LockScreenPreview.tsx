@@ -25,7 +25,7 @@ export default function LockScreenPreview({ data }: LockScreenPreviewProps) {
         margin: "0 auto",
         fontFamily: "'Inter', sans-serif",
       }}
-      aria-label="Lock screen widget preview"
+      aria-label="Home screen widget preview"
     >
       {/* Phone frame */}
       <div

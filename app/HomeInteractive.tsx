@@ -363,7 +363,7 @@ export default function HomeInteractive({
                   borderRadius: "2px",
                   display: "inline-block",
                 }}>
-                  ⬡ App Store — Coming Soon
+                  ⬡ App Store — Download
                 </div>
               </a>
               <a
