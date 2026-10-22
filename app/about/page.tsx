@@ -540,10 +540,8 @@ export default function AboutPage() {
             }}
           >
             {[
-              "iOS App with native lock screen widget",
-              "Android App with home screen widget",
+              "Android app — in closed testing now, public release coming soon",
               "More languages (Turkish, French, Spanish, Indonesian, and more)",
-              "Daily reflections (scholarly review in progress)",
               "Audio recitation by Shia qaris",
             ].map((item, i) => (
               <li
@@ -588,9 +586,9 @@ export default function AboutPage() {
 
         <Divider />
 
-        {/* 4. Lock Screen Preview */}
+        {/* 4. Home Screen Widget */}
         <section>
-          <SectionLabel>Lock Screen Widget Preview</SectionLabel>
+          <SectionLabel>Home Screen Widget</SectionLabel>
 
           <p
             style={{
@@ -602,8 +600,8 @@ export default function AboutPage() {
             }}
           >
             The TathirQuran widget displays each day&apos;s ayah directly on
-            your iPhone lock screen or Android home screen — so you begin every
-            day with the Word of Allah before unlocking your phone.
+            your iPhone home screen — so you begin every day with the Word of
+            Allah.
           </p>
 
           <LockScreenPreview data={WIDGET_EXAMPLE} />
@@ -630,23 +628,12 @@ export default function AboutPage() {
               </p>
               <p
                 style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: "11px",
-                  color: "#7a6030",
-                  letterSpacing: "0.04em",
-                  marginBottom: "4px",
-                }}
-              >
-                FCA · CIA · CISA · CRISC
-              </p>
-              <p
-                style={{
                   fontFamily: "'Cormorant Garamond', serif",
                   fontSize: "15px",
                   color: "#2a1f08",
                 }}
               >
-                Five S LLC · San Jose, CA · Member SABA
+                Silicon Valley, California, USA
               </p>
             </div>
 
@@ -669,7 +656,7 @@ export default function AboutPage() {
                   color: "#2a1f08",
                 }}
               >
-                Five S LLC · San Jose, CA · Member SABA
+                Silicon Valley, California, USA
               </p>
             </div>
           </div>
@@ -722,12 +709,14 @@ export default function AboutPage() {
               marginBottom: "20px",
             }}
           >
-            Native iOS and Android apps with lock screen widgets are coming
-            soon. Built with React Native and WidgetKit / Jetpack Glance.
+            The iOS app is available now on the App Store, with a home screen
+            widget for each day&apos;s ayah. The Android app is in closed
+            testing and coming soon. Built with React Native and WidgetKit.
           </p>
 
           <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-            <div
+            <a
+              href="https://apps.apple.com/app/tathirquran/id6811745113"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -735,8 +724,7 @@ export default function AboutPage() {
                 padding: "10px 20px",
                 border: "0.5px solid rgba(201,162,39,0.4)",
                 borderRadius: "2px",
-                opacity: 0.6,
-                cursor: "not-allowed",
+                textDecoration: "none",
               }}
             >
               <span style={{ fontSize: "16px" }}>🍎</span>
@@ -749,9 +737,9 @@ export default function AboutPage() {
                   color: "#0d0a04",
                 }}
               >
-                iOS — Coming Soon
+                iOS — Download on the App Store
               </span>
-            </div>
+            </a>
             <div
               style={{
                 display: "inline-flex",

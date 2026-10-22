@@ -4,15 +4,12 @@ export default function DownloadButtons() {
   return (
     <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
       <a
-        href="#"
+        href="https://apps.apple.com/app/tathirquran/id6811745113"
         className="download-btn"
-        aria-label="Download on the App Store — coming soon"
-        tabIndex={-1}
-        onClick={(e) => e.preventDefault()}
-        style={{ opacity: 0.6, cursor: "not-allowed" }}
+        aria-label="Download on the App Store"
       >
         <AppleIcon />
-        iOS — Soon
+        iOS — Download on the App Store
       </a>
       <a
         href="#"
