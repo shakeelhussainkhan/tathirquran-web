@@ -506,6 +506,62 @@ export default function AboutPage() {
                 </div>
               </div>
             ))}
+
+            {/* Azan audio credit — the app's Shia azan recording is
+                Jafri Library's, credited alongside their Naqvi card. */}
+            <div style={{ display: "flex", gap: 0, overflow: "hidden" }}>
+              <div
+                style={{
+                  width: "3px",
+                  flexShrink: 0,
+                  background:
+                    "linear-gradient(180deg, #e8c96a, #c9a227, #8b6520)",
+                }}
+              />
+              <div style={{ flex: 1, paddingLeft: "14px" }}>
+                <h3
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: "18px",
+                    color: "#0d0a04",
+                    fontWeight: 500,
+                    marginBottom: "6px",
+                  }}
+                >
+                  Shia Azan Recording
+                </h3>
+                <p
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: "15px",
+                    color: "#2a1f08",
+                    lineHeight: 1.65,
+                    marginBottom: "8px",
+                  }}
+                >
+                  The Shia azan recording sounded by the TathirQuran
+                  app&rsquo;s prayer-time alerts is courtesy of Jafri
+                  Library.
+                </p>
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: "11px",
+                    color: "#7a6030",
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  <a
+                    href="https://jafrilibrary.org"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "#c9a227", textDecoration: "underline" }}
+                  >
+                    jafrilibrary.org
+                  </a>
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
