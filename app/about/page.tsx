@@ -10,7 +10,16 @@ export const metadata: Metadata = {
     "About TathirQuran — the first Shia-specific daily Quran app. Our mission, our scholars, and our translations.",
 };
 
-const SCHOLARS = [
+interface ScholarEntry {
+  name: string;
+  lang: string;
+  status: "live" | "pending";
+  description: string;
+  note: string | null;
+  link?: { href: string; label: string };
+}
+
+const SCHOLARS: ScholarEntry[] = [
   {
     name: "M.H. Shakir",
     lang: "English",
@@ -34,6 +43,15 @@ const SCHOLARS = [
     description:
       "The most beloved and widely-used Persian translation, by the eminent Iranian scholar Mahdi Ilahi Ghomshei. In the public domain.",
     note: null,
+  },
+  {
+    name: "Syed Abu Muhammad Naqvi",
+    lang: "Urdu",
+    status: "live" as const,
+    description:
+      "Shia Urdu translation of the Holy Quran (Quran Pak Ka Shia Terjuma), published by Jafri Library. Reproduced word for word exactly as printed, under licence.",
+    note: "Licensed — permission granted by Jafri Library, Sep 2026.",
+    link: { href: "https://jafrilibrary.org", label: "jafrilibrary.org" },
   },
   {
     name: "Allama Muhammad Hussain Najafi",
@@ -465,6 +483,26 @@ export default function AboutPage() {
                       {s.note}
                     </p>
                   )}
+                  {s.link && (
+                    <p
+                      style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: "11px",
+                        color: "#7a6030",
+                        letterSpacing: "0.04em",
+                        marginTop: "4px",
+                      }}
+                    >
+                      <a
+                        href={s.link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: "#c9a227", textDecoration: "underline" }}
+                      >
+                        {s.link.label}
+                      </a>
+                    </p>
+                  )}
                 </div>
               </div>
             ))}
@@ -503,6 +541,7 @@ export default function AboutPage() {
                   { lang: "English", scholar: "M.H. Shakir", school: "Shia Ithna Ashari", status: "✓ Live", live: true },
                   { lang: "English", scholar: "Muhammad Sarwar", school: "Shia Ithna Ashari", status: "✓ Live", live: true },
                   { lang: "Persian", scholar: "Mahdi Ilahi Ghomshei", school: "Iranian Shia", status: "✓ Live", live: true },
+                  { lang: "Urdu", scholar: "Syed Abu Muhammad Naqvi", school: "Shia Ithna Ashari", status: "✓ Live", live: true },
                   { lang: "Urdu", scholar: "Allama M.H. Najafi (RA)", school: "Shia Ithna Ashari", status: "⏳ Permission requested", live: false },
                   { lang: "Urdu", scholar: "Syed Z.H. Jawadi (RA)", school: "Shia Ithna Ashari", status: "⏳ Permission requested", live: false },
                   { lang: "Urdu", scholar: "Maulana Farman Ali (RA)", school: "Shia Ithna Ashari", status: "⏳ Permission requested", live: false },
