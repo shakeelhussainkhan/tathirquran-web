@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Pentest 2026-10-31: don't advertise the framework in responses.
+  poweredByHeader: false,
   // Verse-card rendering (app/api/verse-card) uses native/wasm packages
   // that must be loaded from node_modules at runtime, not bundled.
   serverExternalPackages: ["@resvg/resvg-js", "satori"],
