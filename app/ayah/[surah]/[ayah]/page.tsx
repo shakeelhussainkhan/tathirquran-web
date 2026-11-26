@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: `${ref} — TathirQuran`,
       description: enText.slice(0, 160),
-      url: `https://tathirquran.com/ayah/${surahNum}/${ayahNum}`,
+      url: `https://www.tathirquran.com/ayah/${surahNum}/${ayahNum}`,
       siteName: "TathirQuran",
       type: "article",
     },
@@ -85,7 +85,7 @@ export default async function AyahPage({ params }: Props) {
             publisher: {
               "@type": "Organization",
               name: "TathirQuran",
-              url: "https://tathirquran.com",
+              url: "https://www.tathirquran.com",
             },
           }),
         }}
