@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
-Sitemap: https://tathirquran.com/sitemap.xml
+Sitemap: https://www.tathirquran.com/sitemap.xml

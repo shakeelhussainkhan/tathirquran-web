@@ -14,7 +14,7 @@ const IMPORTANT_AYAHS: [number, number][] = [
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://tathirquran.com';
+  const baseUrl = 'https://www.tathirquran.com';
   return [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'daily', priority: 1 },
     { url: `${baseUrl}/archive`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },

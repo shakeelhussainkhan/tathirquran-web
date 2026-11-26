@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: 'Start every morning with a verse from the Holy Quran. Shia-verified translations by M.H. Shakir, Muhammad Sarwar, and Mahdi Ilahi Ghomshei. Free app by Five S LLC.',
   keywords: ["Quran", "Shia", "daily ayah", "Islamic", "Quran app", "تطهیر"],
   alternates: {
-    canonical: 'https://tathirquran.com',
+    canonical: 'https://www.tathirquran.com',
   },
   icons: {
     icon: [
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'TathirQuran — Daily Shia Quran Verse',
     description: 'Purify your mornings with the Word of Allah. Shia-verified translations in English, Persian and more.',
-    url: 'https://tathirquran.com',
+    url: 'https://www.tathirquran.com',
     siteName: 'TathirQuran',
     locale: 'en_US',
     type: 'website',
@@ -51,7 +51,7 @@ export default function RootLayout({
               "@type": "WebApplication",
               "name": "TathirQuran",
               "description": "Daily Quran verse with Shia translations",
-              "url": "https://tathirquran.com",
+              "url": "https://www.tathirquran.com",
               "applicationCategory": "ReligiousApplication",
               "operatingSystem": "iOS, Android, Web",
               "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
